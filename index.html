@@ -1,429 +1,302 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>BET300 · Cofre metálico</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>BET300 · Cofre de la suerte</title>
 <meta name="theme-color" content="#0b0f1e"/>
 <style>
 :root{
   --bg:#0b0f1e; --panel:#121634; --panel2:#0f1330; --border:#1e2150;
-  --text:#e8ebff; --muted:#b7b9d6; --ok:#25D366;
-  --steel1:#3b455f; --steel2:#1a2038; --steel3:#0b1026;
-  --band:#6e7da8; --band2:#536185;
-  --lock:#ffd166; --lock2:#ffaf4d;
-  --rivet:#cfd7f0;
-  --accent:#ffd166; --accent2:#ff7ab6;
+  --text:#e8ebff; --muted:#b7b9d6; --ok:#25D366; --accent:#ffd166; --accent2:#ff8f66;
 }
 *{box-sizing:border-box} html,body{height:100%}
 body{margin:0;color:var(--text);background:var(--bg);font:16px/1.35 system-ui,-apple-system,Segoe UI,Roboto}
-body.modal-open{overflow:hidden}
 body::before{
-  content:"";position:fixed;inset:0;z-index:-2;
+  content:""; position:fixed; inset:0; z-index:-2;
   background:
-    radial-gradient(900px 500px at 50% -10%, rgba(101,74,255,.25), transparent),
-    radial-gradient(700px 350px at 100% 0%, rgba(0,209,255,.18), transparent),
-    linear-gradient(180deg,#0b0f1e 0%,#0b0f1e 60%,#0a0d20 100%);
+   radial-gradient(900px 500px at 50% -10%, rgba(101,74,255,.22), transparent),
+   radial-gradient(700px 350px at 100% 0%, rgba(0,209,255,.16), transparent),
+   linear-gradient(180deg,#0b0f1e 0%,#0b0f1e 60%,#0a0d20 100%);
 }
-.container{max-width:980px;margin:14px auto;padding:0 14px 24px}
-.card{background: radial-gradient(120% 100% at 50% 0%, rgba(124,77,255,.08), transparent), var(--panel2);
-  border:1px solid var(--border);border-radius:18px;padding:18px;box-shadow:0 15px 40px rgba(0,0,0,.35)}
-@media(max-width:560px){.container{padding:0}.card{border-radius:0;border-left:0;border-right:0;padding:14px}}
 
-.head{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
-.brand.badge{
-  display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:12px;
-  background:linear-gradient(90deg,var(--accent),#ffa94d);color:#0a1020;font-weight:900
-}
+/* layout */
+.container{max-width:1100px;margin:16px auto;padding:0 16px 96px}
+.card{background: radial-gradient(120% 100% at 50% 0%, rgba(124,77,255,.08), transparent), var(--panel2);
+  border:1px solid var(--border); border-radius:18px; padding:18px; box-shadow:0 15px 40px rgba(0,0,0,.35)}
+@media (max-width:520px){.container{padding:0 0 108px}.card{border-radius:0;border-left:0;border-right:0;padding:14px}}
+
+.head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.brand{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(90deg,#ffb366,#ff7a3d);
+  color:#121212;border-radius:14px;padding:10px 14px;font-weight:900;letter-spacing:.5px;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+.brand .dot{width:10px;height:10px;border-radius:999px;background:#fff4;box-shadow:0 0 0 2px #0003 inset}
 .pill{background:linear-gradient(90deg,rgba(124,77,255,.15),rgba(0,209,255,.15));border:1px solid var(--border);
   border-radius:999px;padding:6px 10px;font-size:12px;color:var(--muted)}
-.center{text-align:center}
-h1,h2,h3,p{margin:0 0 8px} h1{font-size:24px} .muted{color:var(--muted)}
-
-.grid{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
-@media(min-width:900px){.grid{grid-template-columns:1.15fr .85fr}}
-
+.grid{display:grid;gap:16px;grid-template-columns:1fr 360px}
+@media (max-width:980px){.grid{grid-template-columns:1fr}}
 .panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px}
 
-/* ===== Cofres ===== */
-.chests{display:grid;gap:12px;grid-template-columns:repeat(3,1fr)}
-@media(max-width:520px){.chests{grid-template-columns:repeat(2,1fr)}}
+/* títulos */
+h1,h2,h3,p{margin:0 0 8px}
+h1{font-size:26px}
+.muted{color:var(--muted)}
 
+/* tablero de cofres */
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:10px}
+@media (max-width:520px){.board{gap:12px}}
 .chest{
-  position:relative; aspect-ratio:5/4; border-radius:14px;
-  background:linear-gradient(180deg,var(--steel1),var(--steel2));
-  border:1px solid rgba(180,195,230,.18);
-  box-shadow:0 10px 22px rgba(0,0,0,.35), inset 0 10px 24px rgba(255,255,255,.06), inset 0 -10px 24px rgba(0,0,0,.25);
-  overflow:hidden; cursor:pointer; transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;
-  display:grid;place-items:center;
-}
-.chest:hover{transform:translateY(-2px); box-shadow:0 14px 28px rgba(0,0,0,.45), inset 0 10px 24px rgba(255,255,255,.08)}
-.chest.disabled{opacity:.6; cursor:not-allowed; filter:grayscale(10%)}
-
-/* Tapa */
-.lid{
-  position:absolute; left:0; right:0; top:0; height:48%;
-  transform-origin:50% 0%; background:
-    linear-gradient(180deg, rgba(255,255,255,.15), transparent 30%),
-    linear-gradient(180deg, #4a5473, #1b233d);
-  border-bottom:1px solid rgba(255,255,255,.08);
-  box-shadow: inset 0 8px 18px rgba(255,255,255,.1), inset 0 -10px 20px rgba(0,0,0,.4);
-  transition: transform .55s cubic-bezier(.2,.8,.2,1), filter .35s;
-  border-top-left-radius:14px;border-top-right-radius:14px;
-}
-
-/* Cuerpo */
-.body{
-  position:absolute; left:0; right:0; bottom:0; top:40%;
+  position:relative; border-radius:18px; padding:16px; height:150px;
   background:
-    linear-gradient(0deg, rgba(0,0,0,.18), transparent 40%),
-    linear-gradient(180deg, #2c3552, var(--steel3));
-  border-top:1px solid rgba(255,255,255,.06);
-  box-shadow: inset 0 10px 18px rgba(0,0,0,.35);
-  border-bottom-left-radius:14px;border-bottom-right-radius:14px;
+   linear-gradient(#263049,#263049) padding-box,
+   radial-gradient(120% 150% at 50% -20%, #55608a, #1b2138) border-box;
+  border:1px solid #3a4060; box-shadow:inset 0 20px 40px rgba(255,255,255,.04), 0 10px 25px rgba(0,0,0,.35);
+  overflow:hidden; display:grid; place-items:center; cursor:pointer;
 }
-
-/* Bandas */
-.band,.band2{
-  position:absolute; left:0; right:0; height:10%;
-  background:linear-gradient(180deg, var(--band), var(--band2));
-  box-shadow: inset 0 0 12px rgba(255,255,255,.2), 0 3px 10px rgba(0,0,0,.35)
+.chest::before, .chest::after{
+  content:""; position:absolute; left:0; right:0; height:12px; background:#2b3452; opacity:.9;
+  border-top:1px solid #4b5375; border-bottom:1px solid #1a1f34;
 }
-.band{top:34%} .band2{bottom:20%}
-
-/* Remaches */
-.rivet{
-  position:absolute; width:8px; height:8px; border-radius:50%;
-  background:radial-gradient(circle at 30% 30%, #fff, var(--rivet) 30%, #98a4c8 60%, #556084 100%);
-  box-shadow:0 1px 3px rgba(0,0,0,.5)
-}
-.rivet.tl{top:6%;left:6%} .rivet.tr{top:6%;right:6%}
-.rivet.bl{bottom:6%;left:6%} .rivet.br{bottom:6%;right:6%}
-.rivet.c1{top:34%;left:25%} .rivet.c2{top:34%;right:25%}
-.rivet.c3{bottom:20%;left:25%} .rivet.c4{bottom:20%;right:25%}
-
-/* Cerradura */
+.chest::before{top:42px} .chest::after{bottom:36px}
 .lock{
-  position:absolute; top:38%; left:50%; transform:translateX(-50%);
-  width:50px; height:62px; border-radius:10px; z-index:2;
-  background:linear-gradient(180deg,var(--lock),var(--lock2));
-  border:1px solid rgba(0,0,0,.25);
-  box-shadow: inset 0 6px 12px rgba(255,255,255,.35), 0 6px 14px rgba(0,0,0,.35);
-  transition: transform .35s ease, opacity .35s ease;
+  position:absolute; width:70px; height:90px; border-radius:16px; background:linear-gradient(#c9a879,#b68c59);
+  box-shadow: 0 6px 16px rgba(0,0,0,.35); display:grid; place-items:center; z-index:2;
 }
-.lock::after{content:""; position:absolute; top:16px; left:50%; transform:translateX(-50%);
-  width:10px; height:14px; border-radius:6px 6px 2px 2px; background:#3d2b00; box-shadow: inset 0 -2px 4px rgba(0,0,0,.6)}
-.lock::before{content:""; position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
-  width:20px; height:6px; border-radius:6px; background:rgba(0,0,0,.35)}
-.glow{position:absolute; inset:10% 8% 22% 8%; filter:blur(18px); opacity:0; pointer-events:none;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(124,77,255,.55), transparent 50%),
-    radial-gradient(circle at 20% 40%, rgba(255,209,102,.4), transparent 60%),
-    radial-gradient(circle at 80% 60%, rgba(0,229,255,.35), transparent 60%);
-  transition:opacity .35s ease}
-.spark{position:absolute; width:3px; height:12px; background:linear-gradient(#fff, transparent);
-  top:45%; left:50%; transform:translate(-50%,-50%) rotate(20deg); opacity:0; pointer-events:none}
-@keyframes shine{0%{opacity:0; transform:translate(-50%,-50%) rotate(10deg) scaleY(.5)}
-  35%{opacity:1}100%{opacity:0; transform:translate(-50%,-110%) rotate(40deg) scaleY(1.4)}}
-.chest.open .glow{opacity:1}
-.chest.open .spark{animation:shine .8s ease-out forwards}
-.chest.open .lid{ transform: rotateX(155deg) translateY(-2%); filter:brightness(1.05) }
-.chest.open .lock{ transform:translate(-50%,120%); opacity:0 }
-.card-inner{
-  position:absolute; inset:18% 10% 16% 10%;
-  border-radius:12px; background:linear-gradient(180deg,#0f1434,#0b102c);
-  border:1px solid rgba(255,255,255,.08);
-  display:grid; place-items:center;
-  opacity:0; transform:translateY(12px) scale(.98); transition:.3s; z-index:3;
+.lock::after{content:""; width:28px;height:28px;border-radius:6px;background:#7a5a2e;box-shadow:inset 0 2px 0 #0004}
+.lock.top{top:20px} .lock.center{top:50%; transform:translateY(-50%);} /* flex para variantes si querés */
+.prize{
+  position:absolute; inset:auto 12px 12px 12px; height:44px; border-radius:12px;
+  display:flex; align-items:center; justify-content:center; font-weight:900;
+  color:#13172b; background:linear-gradient(90deg,#ffd6a2,#ff9db1);
+  border:1px solid #00000022; box-shadow:0 6px 16px rgba(0,0,0,.35); z-index:3;
+  opacity:0; transform:translateY(10px); pointer-events:none;
 }
-.chest.open .card-inner{ opacity:1; transform:translateY(0) scale(1) }
-.badge{
-  display:inline-grid; place-items:center; min-width:140px; height:56px; padding:0 14px;
-  border-radius:14px; background:linear-gradient(90deg,var(--accent),var(--accent2));
-  color:#0a1020; font-weight:900; font-size:28px;
-  box-shadow:0 10px 24px rgba(0,0,0,.35), inset 0 0 18px rgba(255,255,255,.25)
-}
+.chest.open .prize{opacity:1; transform:translateY(0); transition:opacity .28s ease, transform .28s ease}
+.chest.open .lock{display:none}
 
-/* lateral / CTA */
-.stat{display:flex;gap:12px;align-items:center;justify-content:center;margin:8px 0 14px}
-.winBadge{min-width:100px;height:52px;border-radius:14px;
-  background:radial-gradient(100% 100% at 50% 0%, rgba(0,209,255,.35), rgba(124,77,255,.35));
-  display:grid;place-items:center;font-weight:800;font-size:18px;box-shadow:inset 0 0 10px rgba(124,77,255,.35)
+/* panel derecho */
+.side .tag{display:inline-block;padding:6px 10px;border-radius:10px;border:1px solid #3b3f66;color:#c7ccff;margin-bottom:8px;
+background:linear-gradient(90deg,#404779,#2a2f59)}
+.side .box{background:radial-gradient(140% 120% at 50% 0%, rgba(124,77,255,.08), transparent),var(--panel);
+  border:1px solid var(--border); border-radius:16px; padding:16px; margin-top:12px}
+.btn{
+  appearance:none;border:none;cursor:pointer;width:100%;
+  padding:14px 16px;border-radius:14px;font-weight:900;letter-spacing:.2px;
+  background:linear-gradient(90deg,#6c59ff,#00d1ff); color:#0a1020;
+  box-shadow:0 10px 20px rgba(0,0,0,.35);
 }
-.row{display:flex;gap:10px}
-.btn{appearance:none;border:none;cursor:pointer;padding:14px 16px;border-radius:14px;font-weight:800;
-  background:linear-gradient(90deg,#6c59ff,#00d1ff);color:#0a1020;width:100%;box-shadow:0 8px 20px rgba(0,0,0,.35)}
-.btn.ok{background:var(--ok);color:#0b0f1e}
-.btn.play{display:inline-flex;gap:10px;align-items:center;justify-content:center;padding:14px 16px;border-radius:12px;font-weight:800;
-  background:linear-gradient(90deg,var(--accent),var(--accent2));color:#0a1020;box-shadow:0 8px 20px rgba(0,0,0,.25)}
-.promo{display:grid;grid-template-columns:1fr minmax(200px,260px);align-items:center;gap:12px;margin-top:10px;padding:12px;border:1px dashed var(--border);border-radius:12px}
-@media(max-width:560px){.promo{grid-template-columns:1fr}.btn.play{width:100%}}
+.btn.ok{background:#25D366;color:#0b0f1e}
+.btn.orange{background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#0a1020}
 
-/* ===== Dock móvil fijo ===== */
+/* dock móvil fijo */
 .dock{display:none}
-@media(max-width:560px){
-  body{padding-bottom:96px}
-  .desktop-only{display:none!important}
-  .dock{
-    position:fixed;left:0;right:0;bottom:0;z-index:50;
-    background:linear-gradient(180deg, rgba(11,15,30,0) 0%, rgba(11,15,30,.85) 22%, rgba(11,15,30,.95) 100%);
-    padding:10px 14px 16px;display:flex;gap:10px;align-items:center
-  }
-  .dock .btn{padding:14px 12px}
+@media (max-width:980px){
+  .dock{position:fixed;left:0;right:0;bottom:0;z-index:40;
+    background:linear-gradient(180deg,rgba(11,15,30,0) 0%,rgba(11,15,30,.85) 22%,rgba(11,15,30,.95) 100%);
+    padding:10px 14px 14px; display:flex; gap:12px; align-items:center}
 }
 
-/* ===== Confetti + Toast ===== */
-.confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
-.confetti i{position:absolute;width:10px;height:14px;opacity:0;top:-20px;background:linear-gradient(#80ffea,#4e9cff);animation:drop 1.6s linear forwards;transform:rotate(360deg);border-radius:2px}
-@keyframes drop{8%{opacity:1}100%{transform:translateY(110vh) rotate(360deg);opacity:0}}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#10162c;color:#e8ebff;border:1px solid var(--border);
-  border-radius:10px;padding:10px 14px;font-size:14px;opacity:0;transition:.25s;box-shadow:0 10px 30px rgba(0,0,0,.45)}
-.toast.show{opacity:1}
-
-/* ===== MODAL de premio ===== */
+/* MODAL + backdrop */
 .backdrop{
-  position:fixed;inset:0; background:rgba(5,8,20,.75); backdrop-filter:blur(4px);
+  position:fixed; inset:0; background:rgba(5,8,20,.75); backdrop-filter:blur(4px);
   display:none; align-items:center; justify-content:center; z-index:60;
 }
 .backdrop.show{display:flex}
+
+/* modal (sin animación por defecto; se dispara desde JS) */
 .modal{
   width:min(520px,92vw); border-radius:18px; padding:18px 18px 14px;
   background: radial-gradient(120% 100% at 50% 0%, rgba(124,77,255,.12), transparent), var(--panel2);
   border:1px solid var(--border); box-shadow:0 20px 60px rgba(0,0,0,.6);
-  transform:scale(.6); opacity:0; animation:pop .55s cubic-bezier(.2,1,.2,1) forwards;
-  position:relative; overflow:hidden;
+  transform:scale(.6); opacity:0; position:relative; overflow:hidden;
 }
-@keyframes pop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.06);opacity:1}100%{transform:scale(1)}}
-.modal .shine{position:absolute; inset:-40% -20% auto -20%; height:60%; filter:blur(22px);
-  background:radial-gradient(circle at 50% 50%, rgba(255,255,255,.35), transparent 60%); opacity:.35; pointer-events:none}
-.modal h2{margin:2px 0 8px; font-size:28px}
+@keyframes pop{
+  0%   {transform:scale(.6);  opacity:0}
+  60%  {transform:scale(1.06);opacity:1}
+  100% {transform:scale(1);   opacity:1}
+}
+.modal h2{margin:0 0 6px;font-size:22px}
+.modal .big{font-size:34px;font-weight:900;margin-bottom:8px}
+.modal .row{display:flex;gap:12px;margin-top:12px}
+.modal .btn{flex:1}
+.xbtn{position:absolute;top:10px;right:10px;border:0;background:#ffffff14;color:#cfd3ff;padding:6px 9px;border-radius:10px;cursor:pointer}
+.sparkle{
+  position:absolute; width:8px;height:8px;background:radial-gradient(#fff,#ffe27a); border-radius:999px; opacity:0;
+  left:50%; top:45%;
+  animation: burst .9s ease forwards;
+}
+@keyframes burst{
+  0%{opacity:0; transform:translate(0,0) scale(.6)}
+  20%{opacity:1}
+  100%{opacity:0; transform:translate(var(--dx),var(--dy)) scale(1.2)}
+}
 
-/* monedas (GIF o fallback CSS) */
-.coins{
-  position:absolute; inset:auto 0 86px 0; height:120px; display:grid; place-items:center; pointer-events:none; opacity:.9;
+/* toast simple */
+.toast{
+  position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:70;
+  background:#1a2144;color:#e8ebff;border:1px solid #2b3270;border-radius:12px;padding:10px 14px;
+  box-shadow:0 10px 30px rgba(0,0,0,.45);opacity:0;pointer-events:none
 }
-.coins img{height:100%; width:auto; display:block; filter:drop-shadow(0 8px 20px rgba(0,0,0,.45))}
-.coins.fallback{height:0}
-.coins.fallback::before,.coins.fallback::after{
-  content:""; position:absolute; top:-20px; width:10px; height:10px; border-radius:50%;
-  background:radial-gradient(#ffe9a3,#ffcc33); animation:coinFall 1.6s linear infinite; box-shadow:0 0 8px rgba(255,204,51,.7)
-}
-.coins.fallback::after{left:70%; animation-delay:.35s}
-@keyframes coinFall{0%{transform:translateY(-20px)}100%{transform:translateY(110px)}}
-
-.modal .prize{
-  display:grid; place-items:center; height:80px; margin:8px 0 12px; border-radius:16px;
-  background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#0a1020; font-weight:900; font-size:36px;
-  box-shadow:0 14px 30px rgba(0,0,0,.45), inset 0 0 22px rgba(255,255,255,.35);
-  position:relative; overflow:hidden;
-}
-.modal .prize::after{ /* brillo que cruza */
-  content:""; position:absolute; top:-40%; left:-20%; width:30%; height:180%;
-  background:linear-gradient(120deg, rgba(255,255,255,.0) 0%, rgba(255,255,255,.5) 50%, rgba(255,255,255,.0) 100%);
-  transform:skewX(-20deg); animation:sweep 1.6s ease-out .3s forwards;
-}
-@keyframes sweep{0%{left:-30%}100%{left:120%}}
-.modal .actions{display:flex; gap:10px; margin-top:6px; flex-wrap:wrap}
-.modal .btn{font-size:16px}
-.modal .close{
-  position:absolute; top:8px; right:8px; border:none; background:transparent; color:var(--muted);
-  font-size:22px; cursor:pointer
-}
-/* partículas dentro del modal */
-.modal .sparkle{
-  position:absolute; width:8px; height:8px; border-radius:50%;
-  background:radial-gradient(#fff, #ffd166);
-  left:50%; top:20%; animation:sparkle 1.2s ease-in-out forwards; opacity:0;
-}
-@keyframes sparkle{0%{transform:translate(-50%,-10px) scale(.2);opacity:0}20%{opacity:1}
-  100%{transform:translate(calc(-50% + var(--dx)), calc(100% + var(--dy))) scale(.9);opacity:0}}
+.toast.show{animation:toIn .2s ease forwards, toOut .2s ease 2.2s forwards}
+@keyframes toIn{to{opacity:1; transform:translateX(-50%) translateY(-6px)}}
+@keyframes toOut{to{opacity:0; transform:translateX(-50%) translateY(0)}}
 </style>
 </head>
 <body>
 
-<div id="confetti" class="confetti" aria-hidden="true"></div>
-<div id="toast" class="toast">Ya abriste un cofre hoy</div>
-
-<!-- MODAL -->
-<div class="backdrop" id="backdrop" role="dialog" aria-modal="true" aria-labelledby="winTitle">
-  <div class="modal" role="document">
-    <button class="close" id="closeModal" aria-label="Cerrar">✕</button>
-    <div class="shine"></div>
-    <h2 id="winTitle">🎉 ¡Premio obtenido!</h2>
-
-    <!-- Monedas -->
-    <div class="coins" id="coinsBox">
-      <img src="img/coins.gif" alt="" onerror="this.remove();document.getElementById('coinsBox').classList.add('fallback')">
-    </div>
-
-    <div class="prize" id="prizeBig">$0</div>
-    <p class="muted" id="prizeText">Se acredita con tu próxima carga.</p>
-    <div class="actions">
-      <button id="modalClaim" class="btn ok">📲 Reclamar</button>
-      <a id="modalPlay" class="btn play" target="_blank" rel="noopener">🎮 Plataforma</a>
-      <button id="copyBtn" class="btn">📋 Copiar mensaje</button>
-    </div>
-  </div>
-</div>
-
 <div class="container">
   <div class="card">
     <div class="head">
-      <span class="brand badge">BET300</span>
+      <div class="brand">BET300 <span class="dot"></span></div>
       <span class="pill">Promo interactiva</span>
-      <span class="pill">Abrís 1 cofre por día</span>
+      <span class="pill">Abrí 1 cofre por día</span>
     </div>
 
     <div class="grid">
-      <!-- Cofres -->
+      <!-- Izquierda: tablero -->
       <div class="panel">
-        <h2 class="center" style="margin-bottom:8px">Elegí tu cofre metálico</h2>
-        <p class="center muted" style="margin-bottom:14px">Abrí uno para revelar tu beneficio</p>
-        <div class="chests" id="chests"></div>
+        <h1>Elegí tu cofre metálico</h1>
+        <p class="muted">Abrí uno para revelar tu beneficio</p>
+
+        <div id="board" class="board"></div>
       </div>
 
-      <!-- Lateral -->
-      <div class="panel">
-        <div class="center">
-          <div class="stat">
-            <div class="winBadge" id="winBadge">-</div>
-            <div>
-              <h1 id="title">Aún no elegiste</h1>
-              <p class="muted" id="subtitle">Abrí un cofre y descubrí tu premio.</p>
-            </div>
-          </div>
+      <!-- Derecha: premio + CTA -->
+      <aside class="panel side">
+        <div class="tag">🎉 ¡Premio obtenido!</div>
+        <div>
+          <div id="prizeBig" style="font-size:40px;font-weight:900;margin-bottom:6px;">$0</div>
+          <p id="prizeText" class="muted">Recibís el beneficio con tu próxima carga.</p>
         </div>
 
-        <div class="row desktop-only" style="margin-top:8px">
-          <button id="claimBtn" class="btn ok" disabled>📲 Reclamar por WhatsApp</button>
-        </div>
+        <button id="claimBtn" class="btn ok" disabled>📲 Reclamar por WhatsApp</button>
 
-        <div class="promo desktop-only">
-          <div>
-            <strong>Acceso a la plataforma</strong><br>
-            <span class="muted">Entrá ahora y participá antes de que termine.</span>
-          </div>
-          <a id="playNow" class="btn play" target="_blank" rel="noopener">
-            <span class="icon">🎮</span>
-            <span class="label">Entrar a la plataforma</span>
-          </a>
+        <div class="box">
+          <h3 style="margin-bottom:6px">Acceso a la plataforma</h3>
+          <p class="muted" style="margin-bottom:10px">Entrá ahora y participá antes de que termine.</p>
+          <a id="platformBtn" class="btn orange" target="_blank" rel="noopener">🎮 Entrar a la plataforma</a>
         </div>
-      </div>
+      </aside>
     </div>
   </div>
 </div>
 
 <!-- Dock móvil fijo -->
-<div class="dock" id="dock">
-  <button id="dockClaim" class="btn ok" disabled>📲 Reclamar</button>
-  <a id="dockPlay" class="btn play" target="_blank" rel="noopener">🎮 Plataforma</a>
+<div class="dock">
+  <button id="mClaim" class="btn ok" disabled>📲 Reclamar</button>
+  <a id="mPlatform" class="btn orange" target="_blank" rel="noopener">🎮 Plataforma</a>
 </div>
 
+<!-- Modal premio -->
+<div id="backdrop" class="backdrop" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true">
+    <button id="closeModal" class="xbtn">✕</button>
+    <h2>🎉 ¡Premio obtenido!</h2>
+    <div id="mAmount" class="big">$0</div>
+    <p id="mText" class="muted">Recibís el beneficio con tu próxima carga.</p>
+    <div class="row">
+      <button id="modalClaim" class="btn ok">📲 Reclamar por WhatsApp</button>
+      <button id="copyBtn" class="btn">📋 Copiar mensaje</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast">Copiado</div>
+
 <script>
-/* ========= Config ========= */
-const AMOUNTS = [2000,4000,6000,7000,8000,10000];
+/* ===== Parámetros por PC (igual que en la ruleta) ===== */
+const WP_NUMBERS = { principal:"5491157737173", pc1:"5491138601132", pc2:"5491138214312", pc3:"5491168392647" };
+const PLATFORM_LINKS = { principal:"https://plataforma.example/inicio", pc1:"https://c01.bet300vip.com/", pc2:"https://c02.bet300vip.com/", pc3:"https://c03.bet300vip.com/" };
 
-const WP_NUMBERS = {
-  principal:"5491157737173",
-  pc1:"5491138601132",
-  pc2:"5491138214312",
-  pc3:"5491168392647"
-};
-const PLATFORM_LINKS = {
-  principal:"https://plataforma.example/inicio",
-  pc1:"https://c01.bet300vip.com/",
-  pc2:"https://c02.bet300vip.com/",
-  pc3:"https://c03.bet300vip.com/"
-};
-const WP_MSG = "Hola, gané $%AMOUNT% en el cofre y quiero reclamarlo con mi próxima carga.";
+const qs = new URLSearchParams(location.search);
+const pc = qs.get("pc");
+let WP = WP_NUMBERS.principal;
+let PLATFORM = PLATFORM_LINKS.principal;
+if(pc==='1'){ WP=WP_NUMBERS.pc1; PLATFORM=PLATFORM_LINKS.pc1; }
+if(pc==='2'){ WP=WP_NUMBERS.pc2; PLATFORM=PLATFORM_LINKS.pc2; }
+if(pc==='3'){ WP=WP_NUMBERS.pc3; PLATFORM=PLATFORM_LINKS.pc3; }
 
-/* ========= DOM ========= */
-const listEl   = document.getElementById('chests');
-const winBadge = document.getElementById('winBadge');
-const titleEl  = document.getElementById('title');
-const subEl    = document.getElementById('subtitle');
-const claimBtn = document.getElementById('claimBtn');     // desktop
-const dockClaim= document.getElementById('dockClaim');    // mobile
-const dockPlay = document.getElementById('dockPlay');     // mobile
-const confetti = document.getElementById('confetti');
-const toast    = document.getElementById('toast');
-const playNow  = document.getElementById('playNow');
+document.getElementById('platformBtn').href = PLATFORM;
+document.getElementById('mPlatform').href   = PLATFORM;
 
-/* Modal */
-const backdrop = document.getElementById('backdrop');
+/* ===== Cofres y premios ===== */
+const PRIZES = [2000, 3000, 4000, 6000, 8000, 10000]; // 6 cofres
+const boardEl = document.getElementById('board');
+
 const prizeBig = document.getElementById('prizeBig');
 const prizeText= document.getElementById('prizeText');
+const claimBtn = document.getElementById('claimBtn');
+const mClaim   = document.getElementById('mClaim');
+
+const backdrop = document.getElementById('backdrop');
 const modalClaim = document.getElementById('modalClaim');
-const modalPlay  = document.getElementById('modalPlay');
-const copyBtn    = document.getElementById('copyBtn');
-const closeModalBtn = document.getElementById('closeModal');
+const mAmount = document.getElementById('mAmount');
+const mText   = document.getElementById('mText');
+const copyBtn = document.getElementById('copyBtn');
 
-/* Param pc */
-const params = new URLSearchParams(location.search);
-const pc = params.get('pc');
+const toast = document.getElementById('toast');
 
-let WP = WP_NUMBERS.principal;
-if(pc==='1') WP = WP_NUMBERS.pc1 || WP;
-if(pc==='2') WP = WP_NUMBERS.pc2 || WP;
-if(pc==='3') WP = WP_NUMBERS.pc3 || WP;
-
-let PLATFORM = PLATFORM_LINKS.principal;
-if(pc==='1') PLATFORM = PLATFORM_LINKS.pc1 || PLATFORM;
-if(pc==='2') PLATFORM = PLATFORM_LINKS.pc2 || PLATFORM;
-if(pc==='3') PLATFORM = PLATFORM_LINKS.pc3 || PLATFORM;
-if (playNow) playNow.href = PLATFORM;
-dockPlay.href = PLATFORM;
-modalPlay.href = PLATFORM;
-
-/* ========= Audio ========= */
-const AudioKit=(()=>{
-  const Ctx=window.AudioContext||window.webkitAudioContext;
-  const ctx=new Ctx(); let unlocked=false;
-  function unlock(){ if(!unlocked){ ctx.resume().catch(()=>{}); unlocked=true; } }
-  function blip(freq=900,dur=0.04,vol=0.06,type='square'){
-    const o=ctx.createOscillator(); const g=ctx.createGain();
-    o.type=type; o.frequency.value=freq; g.gain.value=0; o.connect(g).connect(ctx.destination);
-    const t=ctx.currentTime; g.gain.linearRampToValueAtTime(vol, t+0.01); g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
-    o.start(t); o.stop(t+dur);
-  }
-  function creak(){ blip(520,0.09,0.06,'sawtooth'); setTimeout(()=>blip(420,0.08,0.05,'sawtooth'),70); setTimeout(()=>blip(340,0.08,0.05,'sawtooth'),140); }
-  function latch(){ blip(1200,0.05,0.08,'square'); }
-  function win(){ [740,980,1320].forEach((f,i)=>setTimeout(()=>blip(f,0.12,0.09,'square'), i*140)); }
-  return {unlock, creak, latch, win};
-})();
-document.addEventListener('click', ()=>AudioKit.unlock(), {once:true});
-
-/* ========= Persistencia ========= */
-function todayKey(){ const n=new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`; }
-function alreadyPlayedToday(){ return localStorage.getItem('chest_date') === todayKey(); }
-function saveWin(amount){ localStorage.setItem('chest_date', todayKey()); localStorage.setItem('chest_amount', String(amount)); }
-
-/* ========= Helpers ========= */
-function showToast(msg){ toast.textContent=msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),1800); }
-function confettiBurst(){
-  confetti.innerHTML=''; const n=30;
-  for(let i=0;i<n;i++){ const p=document.createElement('i'); p.style.left=(Math.random()*100)+'vw'; p.style.animationDelay=(Math.random()*0.5)+'s';
-    p.style.background=Math.random()<.5?'linear-gradient(#80ffea,#4e9cff)':'linear-gradient(#ffd166,#ff3d7f)'; confetti.appendChild(p); }
-  setTimeout(()=>confetti.innerHTML='', 1800);
-}
 const money = n => "$"+n.toLocaleString("es-AR");
 
-/* ========= Modal ========= */
+/* ===== Estado diario ===== */
+function todayKey(){ const n=new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`; }
+function resetIfNewDay(){
+  const t=todayKey(), d=localStorage.getItem('cofre_day');
+  if(!d || d!==t){ localStorage.removeItem('cofre_done'); localStorage.removeItem('cofre_prize'); localStorage.setItem('cofre_day',t); }
+}
+resetIfNewDay();
+
+/* ===== UI de cofres ===== */
+function chestHTML(i){
+  return `
+  <button class="chest" data-i="${i}" aria-label="Abrir cofre">
+    <div class="lock center"></div>
+    <div class="prize">$${(PRIZES[i]).toLocaleString("es-AR")}</div>
+  </button>`;
+}
+
+function renderBoard(){
+  boardEl.innerHTML = Array.from({length:6}, (_,i)=>chestHTML(i)).join('');
+}
+renderBoard();
+
+/* ===== Lógica de abrir ===== */
+function winText(v){ return `Recibís <b>${money(v)} extra</b> con tu próxima carga.`; }
+function waMsg(v){ return `Hola, gané ${money(v)} en el cofre y quiero reclamarlo con mi próxima carga.`; }
+
+function showToast(msg){
+  toast.textContent = msg;
+  toast.classList.remove('show'); // reinicio
+  void toast.offsetWidth; // reflow
+  toast.classList.add('show');
+}
+
+function lockBoard(){
+  boardEl.querySelectorAll('.chest').forEach(c=>c.disabled=true);
+}
+
 function openModal(amount){
-  prizeBig.textContent = money(amount);
-  prizeText.innerHTML = `Recibís <b>${money(amount)} extra</b> con tu próxima carga.`;
+  mAmount.textContent = money(amount);
+  mText.innerHTML     = winText(amount);
 
-  const msg = `Hola, gané ${money(amount)} en el cofre y quiero reclamarlo con mi próxima carga.`;
+  const msg  = waMsg(amount);
   const link = `https://wa.me/${WP}?text=${encodeURIComponent(msg)}`;
-
   modalClaim.onclick = ()=>location.href=link;
   copyBtn.onclick = async ()=>{
     try{ await navigator.clipboard.writeText(msg); showToast("Mensaje copiado"); }
     catch{ showToast("Copiá manualmente si tu navegador no lo permite"); }
   };
 
-  // Chispas
   const modalEl = backdrop.querySelector('.modal');
+
+  // reinicio de animación para evitar parpadeos
+  modalEl.style.animation = 'none';
+  modalEl.style.opacity = '0';
+  modalEl.style.transform = 'scale(.6)';
+  // forzar reflow
+  modalEl.offsetHeight;
+  modalEl.style.animation = 'pop .55s cubic-bezier(.2,1,.2,1) forwards';
+
+  // chispas decorativas
   [...modalEl.querySelectorAll('.sparkle')].forEach(n=>n.remove());
   for(let i=0;i<18;i++){
     const s=document.createElement('span');
@@ -438,85 +311,62 @@ function openModal(amount){
   backdrop.classList.add('show');
   document.body.classList.add('modal-open');
 }
+
 function closeModal(){
   backdrop.classList.remove('show');
   document.body.classList.remove('modal-open');
 }
-closeModalBtn.addEventListener('click', closeModal);
-// IMPORTANTE: no cerramos al tocar fuera ni con ESC para que el premio quede visible
-backdrop.addEventListener('click', (e)=>{/* no-op para evitar cierre accidental */});
-document.addEventListener('keydown', e=>{/* bloqueamos Esc */});
+document.getElementById('closeModal').addEventListener('click', closeModal);
+// No cerramos al hacer click fuera, para que puedan leer y reclamar
+backdrop.addEventListener('click', (e)=>{/* intencionalmente vacío */});
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ /* bloqueado */ }});
 
-/* ========= Render ========= */
-function renderChests(){
-  const el = document.getElementById('chests'); el.innerHTML='';
-  for(let i=0;i<6;i++){
-    const c=document.createElement('div');
-    c.className='chest';
-    c.innerHTML=`
-      <div class="lid"></div>
-      <div class="body"></div>
-      <div class="band"></div>
-      <div class="band2"></div>
-      <div class="rivet tl"></div><div class="rivet tr"></div><div class="rivet bl"></div><div class="rivet br"></div>
-      <div class="rivet c1"></div><div class="rivet c2"></div><div class="rivet c3"></div><div class="rivet c4"></div>
-      <div class="lock"></div>
-      <div class="glow"></div>
-      <div class="spark"></div>
-      <div class="card-inner"><span class="badge">?</span></div>`;
-    c.addEventListener('click', ()=>onOpen(c));
-    el.appendChild(c);
-  }
-  if(alreadyPlayedToday()){
-    const win=parseInt(localStorage.getItem('chest_amount')||'0',10);
-    if(win){
-      winBadge.textContent=money(win);
-      titleEl.textContent="🎉 ¡Premio obtenido!";
-      subEl.innerHTML=`Recibís <b>${money(win)} extra</b> con tu próxima carga.`;
-      enableClaim(win);
-    }
-    document.querySelectorAll('.chest').forEach(b=>b.classList.add('disabled'));
-  }
-}
+/* abrir cofre */
+boardEl.addEventListener('click', (e)=>{
+  const btn = e.target.closest('.chest');
+  if(!btn) return;
+  if(localStorage.getItem('cofre_done')==='1'){ showToast("Ya abriste tu cofre de hoy"); return; }
 
-/* ========= Claim sync ========= */
-function enableClaim(amount){
-  const msg = WP_MSG.replace("%AMOUNT%", amount.toLocaleString("es-AR"));
+  // ganador
+  const prize = PRIZES[Number(btn.dataset.i)];
+
+  // UI
+  btn.classList.add('open'); // muestra la etiqueta del premio (lock desaparece)
+  lockBoard();
+
+  // panel derecho + botones
+  prizeBig.textContent = money(prize);
+  prizeText.innerHTML  = winText(prize);
+  const msg = waMsg(prize);
   const link = `https://wa.me/${WP}?text=${encodeURIComponent(msg)}`;
-  if (claimBtn){ claimBtn.disabled=false; claimBtn.onclick=()=>location.href=link; }
-  dockClaim.disabled=false; dockClaim.onclick=()=>location.href=link;
-  modalClaim.onclick = ()=>location.href=link;
-}
+  claimBtn.disabled=false; mClaim.disabled=false;
+  claimBtn.onclick = ()=>location.href=link;
+  mClaim.onclick   = ()=>location.href=link;
 
-/* ========= Abrir ========= */
-let opened=false;
-function onOpen(chEl){
-  if(opened) return;
-  if(alreadyPlayedToday()){ showToast("Ya abriste un cofre hoy"); return; }
-  opened=true;
+  // persistencia diaria
+  localStorage.setItem('cofre_done','1');
+  localStorage.setItem('cofre_prize', String(prize));
+  localStorage.setItem('cofre_day', todayKey());
 
-  const win = AMOUNTS[Math.floor(Math.random()*AMOUNTS.length)];
+  // modal premiado
+  openModal(prize);
+});
 
-  chEl.classList.add('open');
-  AudioKit.creak(); setTimeout(()=>AudioKit.latch(),120);
-
-  const badgeEl = chEl.querySelector('.card-inner .badge');
-  setTimeout(()=>{
-    badgeEl.textContent = money(win);
-    winBadge.textContent = money(win);
-    titleEl.textContent = "🎉 ¡Premio obtenido!";
-    subEl.innerHTML = `Recibís <b>${money(win)} extra</b> con tu próxima carga.`;
-    enableClaim(win);
-    saveWin(win);
-    confettiBurst(); AudioKit.win();
-    openModal(win); // POPUP ANIMADO y persistente
-  },320);
-
-  document.querySelectorAll('.chest').forEach(b=>{ if(b!==chEl) b.classList.add('disabled'); });
-}
-
-/* ========= Init ========= */
-renderChests();
+/* restaurar si ya ganó hoy */
+(function restore(){
+  const done = localStorage.getItem('cofre_done')==='1';
+  const saved = Number(localStorage.getItem('cofre_prize'));
+  if(done && saved){
+    prizeBig.textContent = money(saved);
+    prizeText.innerHTML  = winText(saved);
+    claimBtn.disabled=false; mClaim.disabled=false;
+    const msg = waMsg(saved);
+    const link = `https://wa.me/${WP}?text=${encodeURIComponent(msg)}`;
+    claimBtn.onclick = ()=>location.href=link;
+    mClaim.onclick   = ()=>location.href=link;
+    lockBoard();
+  }
+})();
 </script>
 </body>
 </html>
