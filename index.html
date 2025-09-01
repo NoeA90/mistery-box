@@ -9,12 +9,12 @@
 :root{
   --bg:#0b0f1e; --panel:#121634; --panel2:#0f1330; --border:#1e2150;
   --text:#e8ebff; --muted:#b7b9d6; --ok:#25D366;
-  --steel1:#3b455f; --steel2:#1a2038; --steel3:#0b1026;          /* metal base */
-  --band:#6e7da8; --band2:#536185;                                /* bandas */
-  --lock:#ffd166; --lock2:#ffaf4d;                                /* cerradura */
-  --rivet:#cfd7f0;                                                /* remaches */
-  --glow:#7c4dff;                                                 /* resplandor */
-  --accent:#ffd166; --accent2:#ff7ab6;                            /* badge premio */
+  --steel1:#3b455f; --steel2:#1a2038; --steel3:#0b1026;
+  --band:#6e7da8; --band2:#536185;
+  --lock:#ffd166; --lock2:#ffaf4d;
+  --rivet:#cfd7f0;
+  --glow:#7c4dff;
+  --accent:#ffd166; --accent2:#ff7ab6;
 }
 *{box-sizing:border-box} html,body{height:100%}
 body{margin:0;color:var(--text);background:var(--bg);font:16px/1.35 system-ui,-apple-system,Segoe UI,Roboto}
@@ -31,7 +31,6 @@ body::before{
 @media(max-width:560px){.container{padding:0}.card{border-radius:0;border-left:0;border-right:0;padding:14px}}
 
 .head{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
-.brand{height:32px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.4))}
 .brand.badge{
   display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:12px;
   background:linear-gradient(90deg,var(--accent),#ffa94d);color:#0a1020;font-weight:900
@@ -47,28 +46,21 @@ h1,h2,h3,p{margin:0 0 8px} h1{font-size:24px} .muted{color:var(--muted)}
 .panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px}
 
 /* ===== Cofres ===== */
-.chests{
-  display:grid;gap:12px;
-  grid-template-columns:repeat(3,1fr);
-}
+.chests{display:grid;gap:12px;grid-template-columns:repeat(3,1fr)}
 @media(max-width:520px){.chests{grid-template-columns:repeat(2,1fr)}}
 
 .chest{
-  position:relative; aspect-ratio: 5 / 4;
-  border-radius:14px;
+  position:relative; aspect-ratio:5/4; border-radius:14px;
   background:linear-gradient(180deg,var(--steel1),var(--steel2));
   border:1px solid rgba(180,195,230,.18);
-  box-shadow:
-    0 10px 22px rgba(0,0,0,.35),
-    inset 0 10px 24px rgba(255,255,255,.06),
-    inset 0 -10px 24px rgba(0,0,0,.25);
+  box-shadow:0 10px 22px rgba(0,0,0,.35), inset 0 10px 24px rgba(255,255,255,.06), inset 0 -10px 24px rgba(0,0,0,.25);
   overflow:hidden; cursor:pointer; transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;
-  display:grid; place-items:center;
+  display:grid;place-items:center;
 }
-.chest:hover{ transform:translateY(-2px); box-shadow:0 14px 28px rgba(0,0,0,.45), inset 0 10px 24px rgba(255,255,255,.08) }
+.chest:hover{transform:translateY(-2px); box-shadow:0 14px 28px rgba(0,0,0,.45), inset 0 10px 24px rgba(255,255,255,.08)}
 .chest.disabled{opacity:.6; cursor:not-allowed; filter:grayscale(10%)}
 
-/* Tapa del cofre */
+/* Tapa */
 .lid{
   position:absolute; left:0; right:0; top:0; height:48%;
   transform-origin:50% 0%; background:
@@ -91,89 +83,71 @@ h1,h2,h3,p{margin:0 0 8px} h1{font-size:24px} .muted{color:var(--muted)}
   border-bottom-left-radius:14px;border-bottom-right-radius:14px;
 }
 
-/* Bandas metálicas horizontales */
-.band, .band2{
+/* Bandas */
+.band,.band2{
   position:absolute; left:0; right:0; height:10%;
   background:linear-gradient(180deg, var(--band), var(--band2));
-  box-shadow: inset 0 0 12px rgba(255,255,255,.2), 0 3px 10px rgba(0,0,0,.35);
+  box-shadow: inset 0 0 12px rgba(255,255,255,.2), 0 3px 10px rgba(0,0,0,.35)
 }
-.band { top:34% }
-.band2{ bottom:20% }
+.band{top:34%} .band2{bottom:20%}
 
 /* Remaches */
 .rivet{
   position:absolute; width:8px; height:8px; border-radius:50%;
   background:radial-gradient(circle at 30% 30%, #fff, var(--rivet) 30%, #98a4c8 60%, #556084 100%);
-  box-shadow:0 1px 3px rgba(0,0,0,.5);
+  box-shadow:0 1px 3px rgba(0,0,0,.5)
 }
-.rivet.tl{ top:6%; left:6% }
-.rivet.tr{ top:6%; right:6% }
-.rivet.bl{ bottom:6%; left:6% }
-.rivet.br{ bottom:6%; right:6% }
-.rivet.c1{ top:34%; left:25% } .rivet.c2{ top:34%; right:25% }
-.rivet.c3{ bottom:20%; left:25% } .rivet.c4{ bottom:20%; right:25% }
+.rivet.tl{top:6%;left:6%} .rivet.tr{top:6%;right:6%}
+.rivet.bl{bottom:6%;left:6%} .rivet.br{bottom:6%;right:6%}
+.rivet.c1{top:34%;left:25%} .rivet.c2{top:34%;right:25%}
+.rivet.c3{bottom:20%;left:25%} .rivet.c4{bottom:20%;right:25%}
 
 /* Cerradura */
 .lock{
   position:absolute; top:38%; left:50%; transform:translateX(-50%);
-  width:50px; height:62px; border-radius:10px;
+  width:50px; height:62px; border-radius:10px; z-index:2;
   background:linear-gradient(180deg,var(--lock),var(--lock2));
   border:1px solid rgba(0,0,0,.25);
   box-shadow: inset 0 6px 12px rgba(255,255,255,.35), 0 6px 14px rgba(0,0,0,.35);
-  z-index:2;
+  transition: transform .35s ease, opacity .35s ease;   /* >> se retira al abrir */
 }
-.lock::after{ /* ojo de cerradura */
-  content:""; position:absolute; top:16px; left:50%; transform:translateX(-50%);
-  width:10px; height:14px; border-radius:6px 6px 2px 2px; background:#3d2b00;
-  box-shadow: inset 0 -2px 4px rgba(0,0,0,.6);
-}
-.lock::before{ /* ranura */
-  content:""; position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
-  width:20px; height:6px; border-radius:6px; background:rgba(0,0,0,.35)
-}
+.lock::after{content:""; position:absolute; top:16px; left:50%; transform:translateX(-50%);
+  width:10px; height:14px; border-radius:6px 6px 2px 2px; background:#3d2b00; box-shadow: inset 0 -2px 4px rgba(0,0,0,.6)}
+.lock::before{content:""; position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
+  width:20px; height:6px; border-radius:6px; background:rgba(0,0,0,.35)}
 
-/* Resplandor al abrir */
+/* Resplandor & chispas */
 .glow{
-  position:absolute; inset:10% 8% 22% 8%; filter:blur(18px); opacity:.0; pointer-events:none;
+  position:absolute; inset:10% 8% 22% 8%; filter:blur(18px); opacity:0; pointer-events:none;
   background:
     radial-gradient(circle at 50% 0%, rgba(124,77,255,.55), transparent 50%),
     radial-gradient(circle at 20% 40%, rgba(255,209,102,.4), transparent 60%),
     radial-gradient(circle at 80% 60%, rgba(0,229,255,.35), transparent 60%);
   transition:opacity .35s ease;
 }
-.chest.open .glow{ opacity:1 }
-
-/* Chispas/destellos */
-.spark{
-  position:absolute; width:3px; height:12px; background:linear-gradient(#fff, transparent);
-  top:45%; left:50%; transform:translate(-50%,-50%) rotate(20deg); opacity:.0; pointer-events:none;
-}
-.chest.open .spark{ animation:shine .8s ease-out forwards }
-@keyframes shine{
-  0%{ opacity:0; transform:translate(-50%,-50%) rotate(10deg) scaleY(.5) }
-  35%{ opacity:1 }
-  100%{ opacity:0; transform:translate(-50%,-110%) rotate(40deg) scaleY(1.4) }
-}
+.spark{position:absolute; width:3px; height:12px; background:linear-gradient(#fff, transparent);
+  top:45%; left:50%; transform:translate(-50%,-50%) rotate(20deg); opacity:0; pointer-events:none}
+@keyframes shine{0%{opacity:0; transform:translate(-50%,-50%) rotate(10deg) scaleY(.5)}
+  35%{opacity:1}100%{opacity:0; transform:translate(-50%,-110%) rotate(40deg) scaleY(1.4)}}
+.chest.open .glow{opacity:1}
+.chest.open .spark{animation:shine .8s ease-out forwards}
 
 /* Estado abierto */
 .chest.open .lid{ transform: rotateX(155deg) translateY(-2%); filter:brightness(1.05) }
-
-/* Premio interior */
+.chest.open .lock{ transform:translate(-50%,120%); opacity:0 }  /* << la cerradura baja */
 .card-inner{
   position:absolute; inset:18% 10% 16% 10%;
-  border-radius:12px;
-  background:linear-gradient(180deg,#0f1434,#0b102c);
+  border-radius:12px; background:linear-gradient(180deg,#0f1434,#0b102c);
   border:1px solid rgba(255,255,255,.08);
   display:grid; place-items:center;
-  opacity:0; transform:translateY(12px) scale(.98); transition:.3s;
+  opacity:0; transform:translateY(12px) scale(.98); transition:.3s; z-index:3; /* << sobre lock */
 }
 .chest.open .card-inner{ opacity:1; transform:translateY(0) scale(1) }
-
 .badge{
   display:inline-grid; place-items:center; min-width:140px; height:56px; padding:0 14px;
   border-radius:14px; background:linear-gradient(90deg,var(--accent),var(--accent2));
   color:#0a1020; font-weight:900; font-size:28px;
-  box-shadow:0 10px 24px rgba(0,0,0,.35), inset 0 0 18px rgba(255,255,255,.25);
+  box-shadow:0 10px 24px rgba(0,0,0,.35), inset 0 0 18px rgba(255,255,255,.25)
 }
 
 /* lateral / CTA */
@@ -183,29 +157,31 @@ h1,h2,h3,p{margin:0 0 8px} h1{font-size:24px} .muted{color:var(--muted)}
   display:grid;place-items:center;font-weight:800;font-size:18px;box-shadow:inset 0 0 10px rgba(124,77,255,.35)
 }
 .row{display:flex;gap:10px}
-.btn{
-  appearance:none;border:none;cursor:pointer;padding:14px 16px;border-radius:14px;font-weight:800;background:linear-gradient(90deg,#6c59ff,#00d1ff);color:#0a1020;width:100%;
-  box-shadow:0 8px 20px rgba(0,0,0,.35)
-}
+.btn{appearance:none;border:none;cursor:pointer;padding:14px 16px;border-radius:14px;font-weight:800;
+  background:linear-gradient(90deg,#6c59ff,#00d1ff);color:#0a1020;width:100%;box-shadow:0 8px 20px rgba(0,0,0,.35)}
 .btn.ok{background:var(--ok);color:#0b0f1e}
 .btn.play{display:inline-flex;gap:10px;align-items:center;justify-content:center;padding:14px 16px;border-radius:12px;font-weight:800;
   background:linear-gradient(90deg,var(--accent),var(--accent2));color:#0a1020;box-shadow:0 8px 20px rgba(0,0,0,.25)}
 .promo{display:grid;grid-template-columns:1fr minmax(200px,260px);align-items:center;gap:12px;margin-top:10px;padding:12px;border:1px dashed var(--border);border-radius:12px}
 @media(max-width:560px){.promo{grid-template-columns:1fr}.btn.play{width:100%}}
 
-/* confetti / toast */
+/* ===== Dock móvil fijo ===== */
+.dock{display:none}
+@media(max-width:560px){
+  body{padding-bottom:96px} /* evita que el dock tape el contenido */
+  .desktop-only{display:none!important}
+  .dock{
+    position:fixed;left:0;right:0;bottom:0;z-index:50;
+    background:linear-gradient(180deg, rgba(11,15,30,0) 0%, rgba(11,15,30,.85) 22%, rgba(11,15,30,.95) 100%);
+    padding:10px 14px 16px;display:flex;gap:10px;align-items:center
+  }
+  .dock .btn{padding:14px 12px}
+}
 .confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
-.confetti i{
-  position:absolute;width:10px;height:14px;opacity:0;top:-20px;
-  background:linear-gradient(#80ffea,#4e9cff);
-  animation:drop 1.6s linear forwards;transform:rotate(360deg);border-radius:2px
-}
+.confetti i{position:absolute;width:10px;height:14px;opacity:0;top:-20px;background:linear-gradient(#80ffea,#4e9cff);animation:drop 1.6s linear forwards;transform:rotate(360deg);border-radius:2px}
 @keyframes drop{8%{opacity:1}100%{transform:translateY(110vh) rotate(360deg);opacity:0}}
-.toast{
-  position:fixed;left:50%;bottom:24px;transform:translateX(-50%);
-  background:#10162c;color:#e8ebff;border:1px solid var(--border);
-  border-radius:10px;padding:10px 14px;font-size:14px;opacity:0;transition:.25s;box-shadow:0 10px 30px rgba(0,0,0,.45)
-}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#10162c;color:#e8ebff;border:1px solid var(--border);
+  border-radius:10px;padding:10px 14px;font-size:14px;opacity:0;transition:.25s;box-shadow:0 10px 30px rgba(0,0,0,.45)}
 .toast.show{opacity:1}
 </style>
 </head>
@@ -242,11 +218,11 @@ h1,h2,h3,p{margin:0 0 8px} h1{font-size:24px} .muted{color:var(--muted)}
           </div>
         </div>
 
-        <div class="row" style="margin-top:8px">
+        <div class="row desktop-only" style="margin-top:8px">
           <button id="claimBtn" class="btn ok" disabled>📲 Reclamar por WhatsApp</button>
         </div>
 
-        <div class="promo">
+        <div class="promo desktop-only">
           <div>
             <strong>Acceso a la plataforma</strong><br>
             <span class="muted">Entrá ahora y participá antes de que termine.</span>
@@ -261,114 +237,98 @@ h1,h2,h3,p{margin:0 0 8px} h1{font-size:24px} .muted{color:var(--muted)}
   </div>
 </div>
 
+<!-- Dock móvil fijo (siempre visibles) -->
+<div class="dock" id="dock">
+  <button id="dockClaim" class="btn ok" disabled>📲 Reclamar</button>
+  <a id="dockPlay" class="btn play" target="_blank" rel="noopener">🎮 Plataforma</a>
+</div>
+
 <script>
 /* ========= Config ========= */
-// 6 montos (2k–10k)
 const AMOUNTS = [2000,4000,6000,7000,8000,10000];
 
-// WhatsApp por PC (igual que siempre)
 const WP_NUMBERS = {
-  principal: "5491157737173",
-  pc1: "5491138601132",
-  pc2: "5491138214312",
-  pc3: "5491168392647"
+  principal:"5491157737173",
+  pc1:"5491138601132",
+  pc2:"5491138214312",
+  pc3:"5491168392647"
 };
-// Plataforma por PC
 const PLATFORM_LINKS = {
-  principal: "https://plataforma.example/inicio",
-  pc1: "https://c01.bet300vip.com/",
-  pc2: "https://c02.bet300vip.com/",
-  pc3: "https://c03.bet300vip.com/"
+  principal:"https://plataforma.example/inicio",
+  pc1:"https://c01.bet300vip.com/",
+  pc2:"https://c02.bet300vip.com/",
+  pc3:"https://c03.bet300vip.com/"
 };
-
 const WP_MSG = "Hola, gané $%AMOUNT% en el cofre y quiero reclamarlo con mi próxima carga.";
 
-/* ========= Estado / elementos ========= */
+/* ========= DOM ========= */
 const listEl   = document.getElementById('chests');
 const winBadge = document.getElementById('winBadge');
 const titleEl  = document.getElementById('title');
 const subEl    = document.getElementById('subtitle');
-const claimBtn = document.getElementById('claimBtn');
+const claimBtn = document.getElementById('claimBtn');     // desktop
+const dockClaim= document.getElementById('dockClaim');    // mobile
+const dockPlay = document.getElementById('dockPlay');     // mobile
 const confetti = document.getElementById('confetti');
 const toast    = document.getElementById('toast');
 const playNow  = document.getElementById('playNow');
 
-/* Parámetro pc */
+/* Param pc */
 const params = new URLSearchParams(location.search);
 const pc = params.get('pc');
 
-/* WhatsApp destino */
 let WP = WP_NUMBERS.principal;
 if(pc==='1') WP = WP_NUMBERS.pc1 || WP;
 if(pc==='2') WP = WP_NUMBERS.pc2 || WP;
 if(pc==='3') WP = WP_NUMBERS.pc3 || WP;
 
-/* Plataforma destino */
 let PLATFORM = PLATFORM_LINKS.principal;
 if(pc==='1') PLATFORM = PLATFORM_LINKS.pc1 || PLATFORM;
 if(pc==='2') PLATFORM = PLATFORM_LINKS.pc2 || PLATFORM;
 if(pc==='3') PLATFORM = PLATFORM_LINKS.pc3 || PLATFORM;
-playNow.href = PLATFORM;
+if (playNow) playNow.href = PLATFORM;
+dockPlay.href = PLATFORM;
 
-/* ========= Audio (WebAudio) ========= */
+/* ========= Audio ========= */
 const AudioKit=(()=>{
   const Ctx=window.AudioContext||window.webkitAudioContext;
-  const ctx=new Ctx();
-  let unlocked=false;
+  const ctx=new Ctx(); let unlocked=false;
   function unlock(){ if(!unlocked){ ctx.resume().catch(()=>{}); unlocked=true; } }
   function blip(freq=900,dur=0.04,vol=0.06,type='square'){
     const o=ctx.createOscillator(); const g=ctx.createGain();
-    o.type=type; o.frequency.value=freq; g.gain.value=0;
-    o.connect(g).connect(ctx.destination);
-    const t=ctx.currentTime;
-    g.gain.linearRampToValueAtTime(vol, t+0.01);
-    g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+    o.type=type; o.frequency.value=freq; g.gain.value=0; o.connect(g).connect(ctx.destination);
+    const t=ctx.currentTime; g.gain.linearRampToValueAtTime(vol, t+0.01); g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
     o.start(t); o.stop(t+dur);
   }
-  function creak(){ // “crujido” de tapa: barrido descendente serrado
-    blip(520,0.09,0.06,'sawtooth');
-    setTimeout(()=>blip(420,0.08,0.05,'sawtooth'), 70);
-    setTimeout(()=>blip(340,0.08,0.05,'sawtooth'), 140);
-  }
-  function latch(){ blip(1200,0.05,0.08,'square'); } // clic de cerradura
+  function creak(){ blip(520,0.09,0.06,'sawtooth'); setTimeout(()=>blip(420,0.08,0.05,'sawtooth'),70); setTimeout(()=>blip(340,0.08,0.05,'sawtooth'),140); }
+  function latch(){ blip(1200,0.05,0.08,'square'); }
   function win(){ [740,980,1320].forEach((f,i)=>setTimeout(()=>blip(f,0.12,0.09,'square'), i*140)); }
   return {unlock, creak, latch, win};
 })();
 document.addEventListener('click', ()=>AudioKit.unlock(), {once:true});
 
-/* ========= Persistencia: 1 apertura por día ========= */
+/* ========= Persistencia ========= */
 function todayKey(){ const n=new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`; }
-function alreadyPlayedToday(){
-  return localStorage.getItem('chest_date') === todayKey();
-}
-function saveWin(amount){
-  localStorage.setItem('chest_date', todayKey());
-  localStorage.setItem('chest_amount', String(amount));
-}
+function alreadyPlayedToday(){ return localStorage.getItem('chest_date') === todayKey(); }
+function saveWin(amount){ localStorage.setItem('chest_date', todayKey()); localStorage.setItem('chest_amount', String(amount)); }
 
-/* ========= UI helpers ========= */
+/* ========= Helpers ========= */
 function showToast(msg){ toast.textContent=msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),1800); }
 function confettiBurst(){
-  confetti.innerHTML='';
-  const n = 30;
-  for(let i=0;i<n;i++){
-    const p = document.createElement('i');
-    p.style.left = (Math.random()*100)+'vw';
-    p.style.animationDelay = (Math.random()*0.5)+'s';
-    p.style.background = Math.random()<.5 ? 'linear-gradient(#80ffea,#4e9cff)' : 'linear-gradient(#ffd166,#ff3d7f)';
-    confetti.appendChild(p);
-  }
-  setTimeout(()=> confetti.innerHTML='', 1800);
+  confetti.innerHTML=''; const n=30;
+  for(let i=0;i<n;i++){ const p=document.createElement('i'); p.style.left=(Math.random()*100)+'vw'; p.style.animationDelay=(Math.random()*0.5)+'s';
+    p.style.background=Math.random()<.5?'linear-gradient(#80ffea,#4e9cff)':'linear-gradient(#ffd166,#ff3d7f)'; confetti.appendChild(p); }
+  setTimeout(()=>confetti.innerHTML='', 1800);
 }
 const money = n => "$"+n.toLocaleString("es-AR");
 
-/* ========= Render de 6 cofres ========= */
+/* ========= Render ========= */
 function renderChests(){
-  listEl.innerHTML = '';
+  listEl.innerHTML='';
   for(let i=0;i<6;i++){
-    const el = document.createElement('div');
-    el.className = 'chest';
-    el.innerHTML = `
+    const el=document.createElement('div');
+    el.className='chest';
+    el.innerHTML=`
       <div class="lid"></div>
       <div class="body"></div>
       <div class="band"></div>
@@ -378,42 +338,41 @@ function renderChests(){
       <div class="lock"></div>
       <div class="glow"></div>
       <div class="spark"></div>
-      <div class="card-inner"><span class="badge">?</span></div>
-    `;
+      <div class="card-inner"><span class="badge">?</span></div>`;
     el.addEventListener('click', ()=>onOpen(el));
     listEl.appendChild(el);
   }
-  // si ya jugó hoy, bloquear y mostrar premio guardado
   if(alreadyPlayedToday()){
-    const win = parseInt(localStorage.getItem('chest_amount')||'0',10);
+    const win=parseInt(localStorage.getItem('chest_amount')||'0',10);
     if(win){
-      winBadge.textContent = money(win);
-      titleEl.textContent = "🎉 ¡Premio obtenido!";
-      subEl.innerHTML = `Recibís <b>${money(win)} extra</b> con tu próxima carga.`;
-      claimBtn.disabled = false;
-      const msg = `Hola, gané ${money(win)} en el cofre y quiero reclamarlo con mi próxima carga.`;
-      claimBtn.onclick = ()=> location.href = `https://wa.me/${WP}?text=${encodeURIComponent(msg)}`;
+      winBadge.textContent=money(win);
+      titleEl.textContent="🎉 ¡Premio obtenido!";
+      subEl.innerHTML=`Recibís <b>${money(win)} extra</b> con tu próxima carga.`;
+      enableClaim(win);
     }
-    document.querySelectorAll('.chest').forEach(b => b.classList.add('disabled'));
+    document.querySelectorAll('.chest').forEach(b=>b.classList.add('disabled'));
   }
 }
 
-/* ========= Lógica al abrir ========= */
-let opened = false;
+/* ========= Claim sync (desktop + dock) ========= */
+function enableClaim(amount){
+  const msg = WP_MSG.replace("%AMOUNT%", amount.toLocaleString("es-AR"));
+  const link = `https://wa.me/${WP}?text=${encodeURIComponent(msg)}`;
+  if (claimBtn){ claimBtn.disabled=false; claimBtn.onclick=()=>location.href=link; }
+  dockClaim.disabled=false; dockClaim.onclick=()=>location.href=link;
+}
+
+/* ========= Abrir ========= */
+let opened=false;
 function onOpen(chEl){
-  if(opened){ return; }
-  if(alreadyPlayedToday()){
-    showToast("Ya abriste un cofre hoy");
-    return;
-  }
-  opened = true;
+  if(opened) return;
+  if(alreadyPlayedToday()){ showToast("Ya abriste un cofre hoy"); return; }
+  opened=true;
 
   const win = AMOUNTS[Math.floor(Math.random()*AMOUNTS.length)];
 
-  // animación + sonidos
   chEl.classList.add('open');
-  AudioKit.creak();
-  setTimeout(()=>AudioKit.latch(), 120);
+  AudioKit.creak(); setTimeout(()=>AudioKit.latch(),120);
 
   const badgeEl = chEl.querySelector('.card-inner .badge');
   setTimeout(()=>{
@@ -421,33 +380,16 @@ function onOpen(chEl){
     winBadge.textContent = money(win);
     titleEl.textContent = "🎉 ¡Premio obtenido!";
     subEl.innerHTML = `Recibís <b>${money(win)} extra</b> con tu próxima carga.`;
-    claimBtn.disabled = false;
-    const msg = WP_MSG.replace("%AMOUNT%", win.toLocaleString("es-AR"));
-    claimBtn.onclick = ()=> location.href = `https://wa.me/${WP}?text=${encodeURIComponent(msg)}`;
+    enableClaim(win);
     saveWin(win);
-    confettiBurst();
-    AudioKit.win();
-  }, 320);
+    confettiBurst(); AudioKit.win();
+  },320);
 
-  // desactivar el resto
-  document.querySelectorAll('.chest').forEach(b=>{
-    if(b!==chEl) b.classList.add('disabled');
-  });
+  document.querySelectorAll('.chest').forEach(b=>{ if(b!==chEl) b.classList.add('disabled'); });
 }
 
 /* ========= Init ========= */
 renderChests();
-
-/* ===== (Opcional) animación suave de “respirar” cofres para dar vida ===== */
-let breathe=0;
-(function idle(){
-  breathe += 0.02;
-  document.querySelectorAll('.chest:not(.disabled):not(.open)').forEach((el,i)=>{
-    const dy = Math.sin(breathe + i)*0.4;
-    el.style.transform = `translateY(${dy}px)`;
-  });
-  requestAnimationFrame(idle);
-})();
 </script>
 </body>
 </html>
