@@ -13,11 +13,11 @@
   --band:#6e7da8; --band2:#536185;
   --lock:#ffd166; --lock2:#ffaf4d;
   --rivet:#cfd7f0;
-  --glow:#7c4dff;
   --accent:#ffd166; --accent2:#ff7ab6;
 }
 *{box-sizing:border-box} html,body{height:100%}
 body{margin:0;color:var(--text);background:var(--bg);font:16px/1.35 system-ui,-apple-system,Segoe UI,Roboto}
+body.modal-open{overflow:hidden}
 body::before{
   content:"";position:fixed;inset:0;z-index:-2;
   background:
@@ -109,38 +109,32 @@ h1,h2,h3,p{margin:0 0 8px} h1{font-size:24px} .muted{color:var(--muted)}
   background:linear-gradient(180deg,var(--lock),var(--lock2));
   border:1px solid rgba(0,0,0,.25);
   box-shadow: inset 0 6px 12px rgba(255,255,255,.35), 0 6px 14px rgba(0,0,0,.35);
-  transition: transform .35s ease, opacity .35s ease;   /* >> se retira al abrir */
+  transition: transform .35s ease, opacity .35s ease;
 }
 .lock::after{content:""; position:absolute; top:16px; left:50%; transform:translateX(-50%);
   width:10px; height:14px; border-radius:6px 6px 2px 2px; background:#3d2b00; box-shadow: inset 0 -2px 4px rgba(0,0,0,.6)}
 .lock::before{content:""; position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
   width:20px; height:6px; border-radius:6px; background:rgba(0,0,0,.35)}
-
-/* Resplandor & chispas */
-.glow{
-  position:absolute; inset:10% 8% 22% 8%; filter:blur(18px); opacity:0; pointer-events:none;
+.glow{position:absolute; inset:10% 8% 22% 8%; filter:blur(18px); opacity:0; pointer-events:none;
   background:
     radial-gradient(circle at 50% 0%, rgba(124,77,255,.55), transparent 50%),
     radial-gradient(circle at 20% 40%, rgba(255,209,102,.4), transparent 60%),
     radial-gradient(circle at 80% 60%, rgba(0,229,255,.35), transparent 60%);
-  transition:opacity .35s ease;
-}
+  transition:opacity .35s ease}
 .spark{position:absolute; width:3px; height:12px; background:linear-gradient(#fff, transparent);
   top:45%; left:50%; transform:translate(-50%,-50%) rotate(20deg); opacity:0; pointer-events:none}
 @keyframes shine{0%{opacity:0; transform:translate(-50%,-50%) rotate(10deg) scaleY(.5)}
   35%{opacity:1}100%{opacity:0; transform:translate(-50%,-110%) rotate(40deg) scaleY(1.4)}}
 .chest.open .glow{opacity:1}
 .chest.open .spark{animation:shine .8s ease-out forwards}
-
-/* Estado abierto */
 .chest.open .lid{ transform: rotateX(155deg) translateY(-2%); filter:brightness(1.05) }
-.chest.open .lock{ transform:translate(-50%,120%); opacity:0 }  /* << la cerradura baja */
+.chest.open .lock{ transform:translate(-50%,120%); opacity:0 }
 .card-inner{
   position:absolute; inset:18% 10% 16% 10%;
   border-radius:12px; background:linear-gradient(180deg,#0f1434,#0b102c);
   border:1px solid rgba(255,255,255,.08);
   display:grid; place-items:center;
-  opacity:0; transform:translateY(12px) scale(.98); transition:.3s; z-index:3; /* << sobre lock */
+  opacity:0; transform:translateY(12px) scale(.98); transition:.3s; z-index:3;
 }
 .chest.open .card-inner{ opacity:1; transform:translateY(0) scale(1) }
 .badge{
@@ -168,7 +162,7 @@ h1,h2,h3,p{margin:0 0 8px} h1{font-size:24px} .muted{color:var(--muted)}
 /* ===== Dock móvil fijo ===== */
 .dock{display:none}
 @media(max-width:560px){
-  body{padding-bottom:96px} /* evita que el dock tape el contenido */
+  body{padding-bottom:96px}
   .desktop-only{display:none!important}
   .dock{
     position:fixed;left:0;right:0;bottom:0;z-index:50;
@@ -177,18 +171,79 @@ h1,h2,h3,p{margin:0 0 8px} h1{font-size:24px} .muted{color:var(--muted)}
   }
   .dock .btn{padding:14px 12px}
 }
+
+/* ===== Confetti + Toast ===== */
 .confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
 .confetti i{position:absolute;width:10px;height:14px;opacity:0;top:-20px;background:linear-gradient(#80ffea,#4e9cff);animation:drop 1.6s linear forwards;transform:rotate(360deg);border-radius:2px}
 @keyframes drop{8%{opacity:1}100%{transform:translateY(110vh) rotate(360deg);opacity:0}}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#10162c;color:#e8ebff;border:1px solid var(--border);
   border-radius:10px;padding:10px 14px;font-size:14px;opacity:0;transition:.25s;box-shadow:0 10px 30px rgba(0,0,0,.45)}
 .toast.show{opacity:1}
+
+/* ===== MODAL de premio ===== */
+.backdrop{
+  position:fixed;inset:0; background:rgba(5,8,20,.75); backdrop-filter:blur(4px);
+  display:none; align-items:center; justify-content:center; z-index:60;
+}
+.backdrop.show{display:flex}
+.modal{
+  width:min(520px,92vw); border-radius:18px; padding:18px;
+  background: radial-gradient(120% 100% at 50% 0%, rgba(124,77,255,.12), transparent), var(--panel2);
+  border:1px solid var(--border); box-shadow:0 20px 60px rgba(0,0,0,.6);
+  transform:scale(.6); opacity:0; animation:pop .55s cubic-bezier(.2,1,.2,1) forwards;
+  position:relative; overflow:hidden;
+}
+@keyframes pop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.06);opacity:1}100%{transform:scale(1)}}
+.modal .shine{position:absolute; inset:-40% -20% auto -20%; height:60%; filter:blur(22px);
+  background:radial-gradient(circle at 50% 50%, rgba(255,255,255,.35), transparent 60%); opacity:.35; pointer-events:none}
+.modal h2{margin:2px 0 8px; font-size:28px}
+.modal .prize{
+  display:grid; place-items:center; height:80px; margin:8px 0 12px; border-radius:16px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#0a1020; font-weight:900; font-size:36px;
+  box-shadow:0 14px 30px rgba(0,0,0,.45), inset 0 0 22px rgba(255,255,255,.35);
+  position:relative; overflow:hidden;
+}
+.modal .prize::after{ /* brillo que cruza */
+  content:""; position:absolute; top:-40%; left:-20%; width:30%; height:180%;
+  background:linear-gradient(120deg, rgba(255,255,255,.0) 0%, rgba(255,255,255,.5) 50%, rgba(255,255,255,.0) 100%);
+  transform:skewX(-20deg); animation:sweep 1.6s ease-out .3s forwards;
+}
+@keyframes sweep{0%{left:-30%}100%{left:120%}}
+.modal .actions{display:flex; gap:10px; margin-top:6px}
+.modal .btn{font-size:16px}
+.modal .close{
+  position:absolute; top:8px; right:8px; border:none; background:transparent; color:var(--muted);
+  font-size:22px; cursor:pointer
+}
+/* partículas dentro del modal */
+.modal .sparkle{
+  position:absolute; width:8px; height:8px; border-radius:50%;
+  background:radial-gradient(#fff, #ffd166);
+  left:50%; top:20%; animation:sparkle 1.2s ease-in-out forwards; opacity:0;
+}
+@keyframes sparkle{0%{transform:translate(-50%,-10px) scale(.2);opacity:0}20%{opacity:1}
+  100%{transform:translate(calc(-50% + var(--dx)), calc(100% + var(--dy))) scale(.9);opacity:0}}
 </style>
 </head>
 <body>
 
 <div id="confetti" class="confetti" aria-hidden="true"></div>
 <div id="toast" class="toast">Ya abriste un cofre hoy</div>
+
+<!-- MODAL -->
+<div class="backdrop" id="backdrop" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+  <div class="modal" role="document">
+    <button class="close" id="closeModal" aria-label="Cerrar">✕</button>
+    <div class="shine"></div>
+    <h2 id="winTitle">🎉 ¡Premio obtenido!</h2>
+    <div class="prize" id="prizeBig">$0</div>
+    <p class="muted" id="prizeText">Se acredita con tu próxima carga.</p>
+    <div class="actions">
+      <button id="modalClaim" class="btn ok">📲 Reclamar</button>
+      <a id="modalPlay" class="btn play" target="_blank" rel="noopener">🎮 Plataforma</a>
+    </div>
+  </div>
+</div>
 
 <div class="container">
   <div class="card">
@@ -237,7 +292,7 @@ h1,h2,h3,p{margin:0 0 8px} h1{font-size:24px} .muted{color:var(--muted)}
   </div>
 </div>
 
-<!-- Dock móvil fijo (siempre visibles) -->
+<!-- Dock móvil fijo -->
 <div class="dock" id="dock">
   <button id="dockClaim" class="btn ok" disabled>📲 Reclamar</button>
   <a id="dockPlay" class="btn play" target="_blank" rel="noopener">🎮 Plataforma</a>
@@ -273,6 +328,14 @@ const confetti = document.getElementById('confetti');
 const toast    = document.getElementById('toast');
 const playNow  = document.getElementById('playNow');
 
+/* Modal */
+const backdrop = document.getElementById('backdrop');
+const prizeBig = document.getElementById('prizeBig');
+const prizeText= document.getElementById('prizeText');
+const modalClaim = document.getElementById('modalClaim');
+const modalPlay  = document.getElementById('modalPlay');
+const closeModalBtn = document.getElementById('closeModal');
+
 /* Param pc */
 const params = new URLSearchParams(location.search);
 const pc = params.get('pc');
@@ -288,6 +351,7 @@ if(pc==='2') PLATFORM = PLATFORM_LINKS.pc2 || PLATFORM;
 if(pc==='3') PLATFORM = PLATFORM_LINKS.pc3 || PLATFORM;
 if (playNow) playNow.href = PLATFORM;
 dockPlay.href = PLATFORM;
+modalPlay.href = PLATFORM;
 
 /* ========= Audio ========= */
 const AudioKit=(()=>{
@@ -322,9 +386,47 @@ function confettiBurst(){
 }
 const money = n => "$"+n.toLocaleString("es-AR");
 
+/* ========= Modal ========= */
+function openModal(amount){
+  // Texto y links
+  prizeBig.textContent = money(amount);
+  prizeText.innerHTML = `Recibís <b>${money(amount)} extra</b> con tu próxima carga.`;
+
+  const msg = `Hola, gané ${money(amount)} en el cofre y quiero reclamarlo con mi próxima carga.`;
+  const link = `https://wa.me/${WP}?text=${encodeURIComponent(msg)}`;
+
+  modalClaim.onclick = ()=>location.href=link;
+
+  // Pequeñas “chispas” dentro del modal
+  const modalEl = backdrop.querySelector('.modal');
+  [...modalEl.querySelectorAll('.sparkle')].forEach(n=>n.remove());
+  for(let i=0;i<18;i++){
+    const s=document.createElement('span');
+    s.className='sparkle';
+    s.style.setProperty('--dx', (Math.random()*240-120)+'px');
+    s.style.setProperty('--dy', (Math.random()*120+40)+'px');
+    s.style.left = (40+Math.random()*20)+'%';
+    s.style.animationDelay = (Math.random()*0.6)+'s';
+    modalEl.appendChild(s);
+  }
+
+  // Mostrar
+  backdrop.classList.add('show');
+  document.body.classList.add('modal-open');
+  closeModalBtn.focus();
+}
+function closeModal(){
+  backdrop.classList.remove('show');
+  document.body.classList.remove('modal-open');
+}
+backdrop.addEventListener('click', (e)=>{ if(e.target===backdrop) closeModal(); });
+closeModalBtn.addEventListener('click', closeModal);
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && backdrop.classList.contains('show')) closeModal(); });
+
 /* ========= Render ========= */
+const listElRef = document.getElementById('chests');
 function renderChests(){
-  listEl.innerHTML='';
+  listElRef.innerHTML='';
   for(let i=0;i<6;i++){
     const el=document.createElement('div');
     el.className='chest';
@@ -340,7 +442,7 @@ function renderChests(){
       <div class="spark"></div>
       <div class="card-inner"><span class="badge">?</span></div>`;
     el.addEventListener('click', ()=>onOpen(el));
-    listEl.appendChild(el);
+    listElRef.appendChild(el);
   }
   if(alreadyPlayedToday()){
     const win=parseInt(localStorage.getItem('chest_amount')||'0',10);
@@ -354,12 +456,13 @@ function renderChests(){
   }
 }
 
-/* ========= Claim sync (desktop + dock) ========= */
+/* ========= Claim sync (desktop + dock + modal) ========= */
 function enableClaim(amount){
   const msg = WP_MSG.replace("%AMOUNT%", amount.toLocaleString("es-AR"));
   const link = `https://wa.me/${WP}?text=${encodeURIComponent(msg)}`;
   if (claimBtn){ claimBtn.disabled=false; claimBtn.onclick=()=>location.href=link; }
   dockClaim.disabled=false; dockClaim.onclick=()=>location.href=link;
+  modalClaim.onclick = ()=>location.href=link;
 }
 
 /* ========= Abrir ========= */
@@ -383,6 +486,7 @@ function onOpen(chEl){
     enableClaim(win);
     saveWin(win);
     confettiBurst(); AudioKit.win();
+    openModal(win); // <<< POPUP ANIMADO
   },320);
 
   document.querySelectorAll('.chest').forEach(b=>{ if(b!==chEl) b.classList.add('disabled'); });
