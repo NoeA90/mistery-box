@@ -3,16 +3,15 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>BET300 · Caja misteriosa</title>
+<title>BET300 · Invitación VIP</title>
 <meta name="theme-color" content="#0b0f1e"/>
 <style>
 :root{
   --bg:#0b0f1e; --panel:#121634; --panel2:#0f1330; --border:#1e2150;
   --text:#e8ebff; --muted:#b7b9d6; --ok:#25D366;
-  --gold1:#ffdf91; --gold2:#ffbf5f;
-  --wrap1:#ff5a5a; --wrap2:#e4483f;      /* papel de regalo */
-  --ribbon:#5f21ff;                      /* cinta */
-  --accent:#ffd166; --accent2:#ff7ab6;   /* gradientes CTA/premio */
+  --gold1:#ffdf91; --gold2:#ffbf5f; --gold3:#d99b3a;
+  --paper:#111737; --paper2:#0e1431;
+  --accent:#ffd166; --accent2:#ff7ab6;
 }
 *{box-sizing:border-box} html,body{height:100%}
 body{margin:0;color:var(--text);background:var(--bg);font:16px/1.35 system-ui,-apple-system,Segoe UI,Roboto}
@@ -40,93 +39,82 @@ h1,h2,h3,p{margin:0 0 8px} h1{font-size:24px} .muted{color:var(--muted)}
 
 .panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px}
 
-/* ===== Cajas regalo ===== */
-.boxes{
+/* ===== Sobres ===== */
+.envelopes{
   display:grid;gap:12px;
   grid-template-columns:repeat(3,1fr);
 }
-@media(max-width:520px){.boxes{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.envelopes{grid-template-columns:repeat(2,1fr)}}
 
-/* base de la caja (card) */
-.box{
-  position:relative; aspect-ratio: 1 / 1;
-  background:linear-gradient(180deg,#14183d,#0f1330);
-  border:1px solid var(--border); border-radius:14px;
+.env{
+  position:relative; aspect-ratio: 4 / 3;
+  border-radius:14px;
+  background:linear-gradient(180deg,var(--paper),var(--paper2));
+  border:1px solid var(--border);
   box-shadow:0 10px 22px rgba(0,0,0,.35), inset 0 8px 24px rgba(124,77,255,.08);
-  display:grid; place-items:center; cursor:pointer; overflow:hidden;
-  transition:transform .15s ease, box-shadow .15s ease;
+  overflow:hidden; cursor:pointer; transition:transform .15s ease, box-shadow .15s ease;
+  display:grid; place-items:center;
 }
-.box:hover{ transform:translateY(-2px); box-shadow:0 14px 28px rgba(0,0,0,.45), inset 0 8px 24px rgba(124,77,255,.12) }
-.box.disabled{opacity:.6; cursor:not-allowed; filter:grayscale(10%)}
+.env:hover{ transform:translateY(-2px); box-shadow:0 14px 28px rgba(0,0,0,.45), inset 0 8px 24px rgba(124,77,255,.12) }
+.env.disabled{opacity:.6; cursor:not-allowed; filter:grayscale(10%)}
 
-/* tapa dorada */
-.lid{
-  position:absolute; inset:auto 6% 58% 6%; height:42%;
-  background:linear-gradient(180deg,var(--gold1),var(--gold2));
-  border-radius:12px 12px 10px 10px;
-  box-shadow: inset 0 6px 12px rgba(0,0,0,.15), 0 6px 16px rgba(0,0,0,.25);
-  transition: transform .55s cubic-bezier(.2,.8,.2,1), box-shadow .5s;
+/* Borde dorado fino */
+.env::after{
+  content:""; position:absolute; inset:6px;
+  border-radius:10px; border:1px solid rgba(255, 209, 102, .25);
+  pointer-events:none;
 }
-/* cuerpo envuelto */
-.body{
-  position:absolute; inset:44% 6% 6% 6%;
+
+/* Solapa (flap) */
+.flap{
+  position:absolute; left:0; right:0; top:0; height:56%;
+  transform-origin:50% 0%;
   background:
-    radial-gradient(12px 12px at 20% 25%, rgba(255,255,255,.12), transparent 60%) repeat,
-    radial-gradient(12px 12px at 70% 70%, rgba(255,255,255,.08), transparent 60%) repeat,
-    linear-gradient(180deg,var(--wrap1),var(--wrap2));
-  background-size: 40px 40px, 46px 46px, auto;
-  border-radius:10px;
-  box-shadow: inset 0 8px 14px rgba(0,0,0,.18), 0 8px 16px rgba(0,0,0,.25);
-}
-/* cinta vertical + horizontal */
-.ribbon{
-  position:absolute; inset:6% 6% 6% 6%; pointer-events:none;
-}
-.ribbon::before,
-.ribbon::after{
-  content:""; position:absolute; border-radius:6px;
-  background:linear-gradient(180deg, #7d52ff, var(--ribbon));
-  box-shadow: inset 0 0 10px rgba(255,255,255,.25);
-}
-.ribbon::before{ /* vertical */
-  width:10%; left:45%; top:0; bottom:0;
-}
-.ribbon::after{ /* horizontal */
-  height:10%; top:45%; left:0; right:0;
+    linear-gradient(180deg, rgba(255,255,255,.15), transparent 30%),
+    linear-gradient(180deg, var(--gold1), var(--gold2));
+  clip-path: polygon(0 0, 100% 0, 50% 86%, 0 0);
+  box-shadow: inset 0 10px 20px rgba(0,0,0,.15), 0 8px 18px rgba(0,0,0,.25);
+  transition: transform .55s cubic-bezier(.2,.8,.2,1), filter .35s;
 }
 
-/* moño central */
-.bow{
-  position:absolute; inset:0; display:grid; place-items:center; pointer-events:none;
+/* Boca del sobre (parte inferior) */
+.pocket{
+  position:absolute; left:0; right:0; bottom:0; top:36%;
+  background:
+    linear-gradient(0deg, rgba(0,0,0,.15), transparent 40%),
+    linear-gradient(180deg, var(--gold2), var(--gold3));
+  clip-path: polygon(0 0, 50% 72%, 100% 0, 100% 100%, 0 100%);
+  box-shadow: inset 0 8px 14px rgba(0,0,0,.18);
 }
-.bow .knot{
-  width:22px; height:22px; border-radius:50%;
-  background: radial-gradient(circle at 35% 35%, #ffffffaa 0 25%, #7d52ff 26%, #4b22dd 70%);
-  box-shadow: 0 3px 10px rgba(0,0,0,.35);
-}
-.bow .left, .bow .right{
-  position:absolute; top:calc(50% - 12px); width:40px; height:24px; border-radius:24px 8px 8px 24px;
-  background: radial-gradient(circle at 30% 50%, #ffffffaa 0 25%, #7d52ff 26%, #4b22dd 75%);
-  box-shadow: 0 3px 10px rgba(0,0,0,.35);
-}
-.bow .left{ right:50%; transform:translateX(-6px) rotate(-12deg) }
-.bow .right{ left:50%;  transform:translateX(6px) rotate(12deg) }
 
-/* estado abierto */
-.box.open .lid{ transform: translateY(-140%) rotate(-10deg); box-shadow:0 18px 32px rgba(0,0,0,.4) }
-.box.open .body{ filter:brightness(1.06) }
-.box.open .bow{ opacity:.85; transform:scale(1.02) }
-
-/* premio dentro */
-.prize{
-  position:absolute; inset:0; display:grid; place-items:center; padding:10px;
-  opacity:0; transform:scale(.92); transition:.25s;
-  font-weight:900; font-size:28px; color:#0a1020;
+/* Sello/medallón */
+.seal{
+  position:absolute; top:36%; left:50%; transform:translate(-50%, -50%);
+  width:46px; height:46px; border-radius:50%;
+  background: radial-gradient(circle at 35% 35%, #ffffffaa 0 25%, #7d52ff 26%, #4b22dd 80%);
+  border:2px solid rgba(255,255,255,.35);
+  box-shadow:0 4px 12px rgba(0,0,0,.35);
+  z-index:2;
 }
-.box.open .prize{ opacity:1; transform:scale(1) }
+
+/* Estado abierto */
+.env.open .flap{ transform: rotateX(160deg) translateY(-2%); filter:brightness(1.03) }
+
+/* Premio interior (tarjeta) */
+.card-inner{
+  position:absolute; inset:12% 10% 16% 10%;
+  border-radius:12px;
+  background:linear-gradient(180deg,#0f1434,#0b102c);
+  border:1px solid rgba(255,255,255,.08);
+  display:grid; place-items:center;
+  opacity:0; transform:translateY(12px) scale(.98); transition:.25s;
+}
+.env.open .card-inner{ opacity:1; transform:translateY(0) scale(1) }
+
 .badge{
-  display:inline-grid; place-items:center; min-width:120px; height:56px; padding:0 14px;
+  display:inline-grid; place-items:center; min-width:140px; height:56px; padding:0 14px;
   border-radius:14px; background:linear-gradient(90deg,var(--accent),var(--accent2));
+  color:#0a1020; font-weight:900; font-size:28px;
   box-shadow:0 10px 24px rgba(0,0,0,.35), inset 0 0 18px rgba(255,255,255,.25);
 }
 
@@ -166,7 +154,7 @@ h1,h2,h3,p{margin:0 0 8px} h1{font-size:24px} .muted{color:var(--muted)}
 <body>
 
 <div id="confetti" class="confetti" aria-hidden="true"></div>
-<div id="toast" class="toast">Ya abriste una caja hoy</div>
+<div id="toast" class="toast">Ya abriste una invitación hoy</div>
 
 <div class="container">
   <div class="card">
@@ -177,11 +165,11 @@ h1,h2,h3,p{margin:0 0 8px} h1{font-size:24px} .muted{color:var(--muted)}
     </div>
 
     <div class="grid">
-      <!-- Cajas -->
+      <!-- Sobres -->
       <div class="panel">
-        <h2 class="center" style="margin-bottom:8px">Elegí tu caja misteriosa</h2>
-        <p class="center muted" style="margin-bottom:14px">Abrí una y descubrí tu beneficio exclusivo</p>
-        <div class="boxes" id="boxes"></div>
+        <h2 class="center" style="margin-bottom:8px">Abrí tu invitación VIP</h2>
+        <p class="center muted" style="margin-bottom:14px">Tocá un sobre y descubrí tu beneficio</p>
+        <div class="envelopes" id="envelopes"></div>
       </div>
 
       <!-- Lateral -->
@@ -191,7 +179,7 @@ h1,h2,h3,p{margin:0 0 8px} h1{font-size:24px} .muted{color:var(--muted)}
             <div class="winBadge" id="winBadge">-</div>
             <div>
               <h1 id="title">Aún no elegiste</h1>
-              <p class="muted" id="subtitle">Abrí una de las cajas para revelar tu premio.</p>
+              <p class="muted" id="subtitle">Abrí un sobre para revelar tu premio.</p>
             </div>
           </div>
         </div>
@@ -220,14 +208,14 @@ h1,h2,h3,p{margin:0 0 8px} h1{font-size:24px} .muted{color:var(--muted)}
 // 6 montos (2k–10k)
 const AMOUNTS = [2000,4000,6000,7000,8000,10000];
 
-// WhatsApp por PC (igual que tu sistema)
+// WhatsApp por PC (mismo sistema)
 const WP_NUMBERS = {
   principal: "5491157737173",
   pc1: "5491138601132",
   pc2: "5491138214312",
   pc3: "5491168392647"
 };
-// Plataforma por PC (igual que tu sistema)
+// Plataforma por PC (mismo sistema)
 const PLATFORM_LINKS = {
   principal: "https://plataforma.example/inicio",
   pc1: "https://c01.bet300vip.com/",
@@ -235,17 +223,17 @@ const PLATFORM_LINKS = {
   pc3: "https://c03.bet300vip.com/"
 };
 
-const WP_MSG = "Hola, gané $%AMOUNT% en la caja misteriosa y quiero reclamarlo con mi próxima carga.";
+const WP_MSG = "Hola, gané $%AMOUNT% en la invitación VIP y quiero reclamarlo con mi próxima carga.";
 
 /* ========= Estado / elementos ========= */
-const boxesEl   = document.getElementById('boxes');
-const winBadge  = document.getElementById('winBadge');
-const titleEl   = document.getElementById('title');
-const subEl     = document.getElementById('subtitle');
-const claimBtn  = document.getElementById('claimBtn');
-const confetti  = document.getElementById('confetti');
-const toast     = document.getElementById('toast');
-const playNow   = document.getElementById('playNow');
+const listEl   = document.getElementById('envelopes');
+const winBadge = document.getElementById('winBadge');
+const titleEl  = document.getElementById('title');
+const subEl    = document.getElementById('subtitle');
+const claimBtn = document.getElementById('claimBtn');
+const confetti = document.getElementById('confetti');
+const toast    = document.getElementById('toast');
+const playNow  = document.getElementById('playNow');
 
 /* Parámetro pc */
 const params = new URLSearchParams(location.search);
@@ -279,8 +267,8 @@ const AudioKit=(()=>{
     g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
     o.start(t); o.stop(t+dur);
   }
-  function open(){ blip(620,0.08,0.09); setTimeout(()=>blip(980,0.08,0.08),120) }
-  function win(){ [880,1175,1568].forEach((f,i)=>setTimeout(()=>blip(f,0.12,0.09), i*130)); }
+  function open(){ blip(540,0.09,0.09); setTimeout(()=>blip(880,0.08,0.08),130) }
+  function win(){ [740,980,1320].forEach((f,i)=>setTimeout(()=>blip(f,0.12,0.09), i*140)); }
   return {unlock, open, win};
 })();
 document.addEventListener('click', ()=>AudioKit.unlock(), {once:true});
@@ -288,11 +276,11 @@ document.addEventListener('click', ()=>AudioKit.unlock(), {once:true});
 /* ========= Persistencia: 1 apertura por día ========= */
 function todayKey(){ const n=new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`; }
 function alreadyPlayedToday(){
-  return localStorage.getItem('mystery_date') === todayKey();
+  return localStorage.getItem('invite_date') === todayKey();
 }
 function saveWin(amount){
-  localStorage.setItem('mystery_date', todayKey());
-  localStorage.setItem('mystery_amount', String(amount));
+  localStorage.setItem('invite_date', todayKey());
+  localStorage.setItem('invite_amount', String(amount));
 }
 
 /* ========= UI helpers ========= */
@@ -311,64 +299,54 @@ function confettiBurst(){
 }
 const money = n => "$"+n.toLocaleString("es-AR");
 
-/* ========= Render de 6 cajas ========= */
-function renderBoxes(){
-  boxesEl.innerHTML = '';
+/* ========= Render de 6 sobres ========= */
+function renderEnvelopes(){
+  listEl.innerHTML = '';
   for(let i=0;i<6;i++){
-    const box = document.createElement('div');
-    box.className = 'box';
-    box.innerHTML = `
-      <div class="lid"></div>
-      <div class="body"></div>
-      <div class="ribbon"></div>
-      <div class="bow">
-        <div class="knot"></div>
-        <div class="left"></div>
-        <div class="right"></div>
-      </div>
-      <div class="prize"><span class="badge">?</span></div>
+    const el = document.createElement('div');
+    el.className = 'env';
+    el.innerHTML = `
+      <div class="flap"></div>
+      <div class="pocket"></div>
+      <div class="seal"></div>
+      <div class="card-inner"><span class="badge">?</span></div>
     `;
-    box.addEventListener('click', ()=>onPick(box));
-    boxesEl.appendChild(box);
+    el.addEventListener('click', ()=>onOpen(el));
+    listEl.appendChild(el);
   }
   // si ya jugó hoy, bloquear
   if(alreadyPlayedToday()){
-    const win = parseInt(localStorage.getItem('mystery_amount')||'0',10);
+    const win = parseInt(localStorage.getItem('invite_amount')||'0',10);
     if(win){
-      // mostrar estado ganador
       winBadge.textContent = money(win);
       titleEl.textContent = "🎉 ¡Premio obtenido!";
       subEl.innerHTML = `Recibís <b>${money(win)} extra</b> con tu próxima carga.`;
       claimBtn.disabled = false;
-      const msg = WP_MSG.replace("%AMOUNT%", win.toLocaleString("es-AR"));
+      const msg = `Hola, gané ${money(win)} en la invitación VIP y quiero reclamarlo con mi próxima carga.`;
       claimBtn.onclick = ()=> location.href = `https://wa.me/${WP}?text=${encodeURIComponent(msg)}`;
     }
-    // desactivar cajas
-    document.querySelectorAll('.box').forEach(b => b.classList.add('disabled'));
+    document.querySelectorAll('.env').forEach(b => b.classList.add('disabled'));
   }
 }
 
 /* ========= Lógica al abrir ========= */
 let opened = false;
-function onPick(boxEl){
+function onOpen(envEl){
   if(opened){ return; }
   if(alreadyPlayedToday()){
-    showToast("Ya abriste una caja hoy");
+    showToast("Ya abriste una invitación hoy");
     return;
   }
   opened = true;
 
-  // premio aleatorio de la lista
   const win = AMOUNTS[Math.floor(Math.random()*AMOUNTS.length)];
 
-  // animación + sonido
-  boxEl.classList.add('open');
+  envEl.classList.add('open');
   AudioKit.open();
 
-  // mostrar premio
-  const prizeEl = boxEl.querySelector('.prize .badge');
+  const badgeEl = envEl.querySelector('.card-inner .badge');
   setTimeout(()=>{
-    prizeEl.textContent = money(win);
+    badgeEl.textContent = money(win);
     winBadge.textContent = money(win);
     titleEl.textContent = "🎉 ¡Premio obtenido!";
     subEl.innerHTML = `Recibís <b>${money(win)} extra</b> con tu próxima carga.`;
@@ -378,16 +356,15 @@ function onPick(boxEl){
     saveWin(win);
     confettiBurst();
     AudioKit.win();
-  }, 260);
+  }, 300);
 
-  // desactivar el resto
-  document.querySelectorAll('.box').forEach(b=>{
-    if(b!==boxEl) b.classList.add('disabled');
+  document.querySelectorAll('.env').forEach(b=>{
+    if(b!==envEl) b.classList.add('disabled');
   });
 }
 
 /* ========= Init ========= */
-renderBoxes();
+renderEnvelopes();
 </script>
 </body>
 </html>
