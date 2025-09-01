@@ -1,15 +1,350 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BET300 - Bono de Bienvenida</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>BET300 · Caja misteriosa</title>
+<meta name="theme-color" content="#0b0f1e"/>
+<style>
+:root{
+  --bg:#0b0f1e; --panel:#121634; --panel2:#0f1330; --border:#1e2150;
+  --text:#e8ebff; --muted:#b7b9d6; --ok:#25D366; --accent:#ffd166; --accent2:#ff7ab6;
+}
+*{box-sizing:border-box} html,body{height:100%}
+body{margin:0;color:var(--text);background:var(--bg);font:16px/1.35 system-ui,-apple-system,Segoe UI,Roboto}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-2;
+  background:
+    radial-gradient(900px 500px at 50% -10%, rgba(101,74,255,.25), transparent),
+    radial-gradient(700px 350px at 100% 0%, rgba(0,209,255,.18), transparent),
+    linear-gradient(180deg,#0b0f1e 0%,#0b0f1e 60%,#0a0d20 100%);
+}
+.container{max-width:980px;margin:14px auto;padding:0 14px 24px}
+.card{background: radial-gradient(120% 100% at 50% 0%, rgba(124,77,255,.08), transparent), var(--panel2);
+  border:1px solid var(--border);border-radius:18px;padding:18px;box-shadow:0 15px 40px rgba(0,0,0,.35)}
+@media(max-width:560px){.container{padding:0}.card{border-radius:0;border-left:0;border-right:0;padding:14px}}
+
+.head{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.brand{height:32px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.4))}
+.pill{background:linear-gradient(90deg,rgba(124,77,255,.15),rgba(0,209,255,.15));border:1px solid var(--border);
+  border-radius:999px;padding:6px 10px;font-size:12px;color:var(--muted)}
+.center{text-align:center}
+h1,h2,h3,p{margin:0 0 8px} h1{font-size:24px} .muted{color:var(--muted)}
+
+.grid{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:900px){.grid{grid-template-columns:1.15fr .85fr}}
+
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px}
+
+/* ===== Cajas ===== */
+.boxes{
+  display:grid;gap:12px;
+  grid-template-columns:repeat(3,1fr);
+}
+@media(max-width:520px){.boxes{grid-template-columns:repeat(2,1fr)}}
+
+.box{
+  position:relative; aspect-ratio: 1 / 1;
+  background:linear-gradient(180deg,#14183d,#0f1330);
+  border:1px solid var(--border); border-radius:14px;
+  box-shadow:0 10px 22px rgba(0,0,0,.35), inset 0 8px 24px rgba(124,77,255,.08);
+  display:grid; place-items:center; cursor:pointer; overflow:hidden;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.box:hover{ transform:translateY(-2px); box-shadow:0 14px 28px rgba(0,0,0,.45), inset 0 8px 24px rgba(124,77,255,.12) }
+.box.disabled{opacity:.6; cursor:not-allowed; filter:grayscale(10%)}
+
+.lid{
+  position:absolute; inset:auto 0 55% 0; height:45%;
+  background:linear-gradient(180deg,#ffce73,#ffad5f);
+  box-shadow: inset 0 6px 12px rgba(0,0,0,.15);
+  transition: transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s;
+}
+.body{
+  position:absolute; inset:45% 0 0 0;
+  background:linear-gradient(180deg,#ff9f5a,#ff7a3d);
+  box-shadow: inset 0 6px 12px rgba(0,0,0,.18);
+}
+.ribbon{
+  position:absolute; inset:0; pointer-events:none;
+  background:
+    linear-gradient(90deg, transparent 48%, #6020ff 50%, transparent 52%) center/100% 18% no-repeat,
+    linear-gradient(0deg, transparent 48%, #6020ff 50%, transparent 52%) center/18% 100% no-repeat;
+  opacity:.95;
+}
+
+/* estado abierto */
+.box.open .lid{ transform: translateY(-120%) rotate(-8deg); box-shadow:0 18px 32px rgba(0,0,0,.4) }
+.box.open .body{ filter:brightness(1.05) }
+
+/* premio */
+.prize{
+  position:absolute; inset:0; display:grid; place-items:center; padding:10px;
+  opacity:0; transform:scale(.92); transition:.25s;
+  font-weight:900; font-size:28px; color:#0a1020;
+}
+.box.open .prize{ opacity:1; transform:scale(1) }
+.badge{
+  display:inline-grid; place-items:center; min-width:120px; height:56px; padding:0 14px;
+  border-radius:14px; background:linear-gradient(90deg,var(--accent),var(--accent2));
+  box-shadow:0 10px 24px rgba(0,0,0,.35), inset 0 0 18px rgba(255,255,255,.25);
+}
+
+/* CTA sección derecha */
+.stat{display:flex;gap:12px;align-items:center;justify-content:center;margin:8px 0 14px}
+.winBadge{min-width:100px;height:52px;border-radius:14px;
+  background:radial-gradient(100% 100% at 50% 0%, rgba(0,209,255,.35), rgba(124,77,255,.35));
+  display:grid;place-items:center;font-weight:800;font-size:18px;box-shadow:inset 0 0 10px rgba(124,77,255,.35)
+}
+.row{display:flex;gap:10px}
+.btn{
+  appearance:none;border:none;cursor:pointer;padding:14px 16px;border-radius:14px;font-weight:800;background:linear-gradient(90deg,#6c59ff,#00d1ff);color:#0a1020;width:100%;
+  box-shadow:0 8px 20px rgba(0,0,0,.35)
+}
+.btn.ok{background:var(--ok);color:#0b0f1e}
+.btn.play{display:inline-flex;gap:10px;align-items:center;justify-content:center;padding:14px 16px;border-radius:12px;font-weight:800;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));color:#0a1020;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+
+/* promo box */
+.promo{display:grid;grid-template-columns:1fr minmax(200px,260px);align-items:center;gap:12px;margin-top:10px;padding:12px;border:1px dashed var(--border);border-radius:12px}
+@media(max-width:560px){.promo{grid-template-columns:1fr}.btn.play{width:100%}}
+
+/* confetti */
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
+.confetti i{
+  position:absolute;width:10px;height:14px;opacity:0;top:-20px;
+  background:linear-gradient(#80ffea,#4e9cff);
+  animation:drop 1.6s linear forwards;transform:rotate(360deg);border-radius:2px
+}
+@keyframes drop{8%{opacity:1}100%{transform:translateY(110vh) rotate(360deg);opacity:0}}
+.toast{
+  position:fixed;left:50%;bottom:24px;transform:translateX(-50%);
+  background:#10162c;color:#e8ebff;border:1px solid var(--border);
+  border-radius:10px;padding:10px 14px;font-size:14px;opacity:0;transition:.25s;box-shadow:0 10px 30px rgba(0,0,0,.45)
+}
+.toast.show{opacity:1}
+</style>
 </head>
 <body>
-    <div class="container">
-        <img src="background.png" alt="Promoción BET300">
-        <a class="cta-button" href="https://wa.me/5491126980720" target="_blank">RECLAMAR</a>
+
+<div id="confetti" class="confetti" aria-hidden="true"></div>
+<div id="toast" class="toast">Ya abriste una caja hoy</div>
+
+<div class="container">
+  <div class="card">
+    <div class="head">
+      <img class="brand" src="img/logo-bet300.svg" alt="BET300" onerror="this.outerHTML='<strong>BET300</strong>'">
+      <span class="pill">Promo interactiva</span>
+      <span class="pill">Jugás 1 vez por día</span>
     </div>
+
+    <div class="grid">
+      <!-- Cajas -->
+      <div class="panel">
+        <h2 class="center" style="margin-bottom:8px">Elegí tu caja misteriosa</h2>
+        <p class="center muted" style="margin-bottom:14px">Abrí una y descubrí tu beneficio exclusivo</p>
+        <div class="boxes" id="boxes"></div>
+      </div>
+
+      <!-- Lateral -->
+      <div class="panel">
+        <div class="center">
+          <div class="stat">
+            <div class="winBadge" id="winBadge">-</div>
+            <div>
+              <h1 id="title">Aún no elegiste</h1>
+              <p class="muted" id="subtitle">Abrí una de las cajas para revelar tu premio.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:8px">
+          <button id="claimBtn" class="btn ok" disabled>📲 Reclamar por WhatsApp</button>
+        </div>
+
+        <div class="promo">
+          <div>
+            <strong>Acceso a la plataforma</strong><br>
+            <span class="muted">Entrá ahora y participá antes de que termine.</span>
+          </div>
+          <a id="playNow" class="btn play" target="_blank" rel="noopener">
+            <span class="icon">🎮</span>
+            <span class="label">Entrar a la plataforma</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ========= Config ========= */
+// 6 montos (2k–10k)
+const AMOUNTS = [2000,4000,6000,7000,8000,10000];
+
+// WhatsApp por PC (igual que tu sistema)
+const WP_NUMBERS = {
+  principal: "5491157737173",
+  pc1: "5491138601132",
+  pc2: "5491138214312",
+  pc3: "5491168392647"
+};
+// Plataforma por PC (igual que tu sistema)
+const PLATFORM_LINKS = {
+  principal: "https://plataforma.example/inicio",
+  pc1: "https://c01.bet300vip.com/",
+  pc2: "https://c02.bet300vip.com/",
+  pc3: "https://c03.bet300vip.com/"
+};
+
+const WP_MSG = "Hola, gané $%AMOUNT% en la caja misteriosa y quiero reclamarlo con mi próxima carga.";
+
+/* ========= Estado / elementos ========= */
+const boxesEl   = document.getElementById('boxes');
+const winBadge  = document.getElementById('winBadge');
+const titleEl   = document.getElementById('title');
+const subEl     = document.getElementById('subtitle');
+const claimBtn  = document.getElementById('claimBtn');
+const confetti  = document.getElementById('confetti');
+const toast     = document.getElementById('toast');
+const playNow   = document.getElementById('playNow');
+
+/* Parámetro pc */
+const params = new URLSearchParams(location.search);
+const pc = params.get('pc');
+
+/* WhatsApp destino */
+let WP = WP_NUMBERS.principal;
+if(pc==='1') WP = WP_NUMBERS.pc1 || WP;
+if(pc==='2') WP = WP_NUMBERS.pc2 || WP;
+if(pc==='3') WP = WP_NUMBERS.pc3 || WP;
+
+/* Plataforma destino */
+let PLATFORM = PLATFORM_LINKS.principal;
+if(pc==='1') PLATFORM = PLATFORM_LINKS.pc1 || PLATFORM;
+if(pc==='2') PLATFORM = PLATFORM_LINKS.pc2 || PLATFORM;
+if(pc==='3') PLATFORM = PLATFORM_LINKS.pc3 || PLATFORM;
+playNow.href = PLATFORM;
+
+/* ========= Audio (WebAudio) ========= */
+const AudioKit=(()=>{
+  const Ctx=window.AudioContext||window.webkitAudioContext;
+  const ctx=new Ctx();
+  let unlocked=false;
+  function unlock(){ if(!unlocked){ ctx.resume().catch(()=>{}); unlocked=true; } }
+  function blip(freq=900,dur=0.04,vol=0.06){
+    const o=ctx.createOscillator(); const g=ctx.createGain();
+    o.type='square'; o.frequency.value=freq; g.gain.value=0;
+    o.connect(g).connect(ctx.destination);
+    const t=ctx.currentTime;
+    g.gain.linearRampToValueAtTime(vol, t+0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+    o.start(t); o.stop(t+dur);
+  }
+  function open(){ blip(620,0.08,0.09); setTimeout(()=>blip(980,0.08,0.08),120) }
+  function win(){ [880,1175,1568].forEach((f,i)=>setTimeout(()=>blip(f,0.12,0.09), i*130)); }
+  return {unlock, open, win};
+})();
+document.addEventListener('click', ()=>AudioKit.unlock(), {once:true});
+
+/* ========= Persistencia: 1 apertura por día ========= */
+function todayKey(){ const n=new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`; }
+function alreadyPlayedToday(){
+  return localStorage.getItem('mystery_date') === todayKey();
+}
+function saveWin(amount){
+  localStorage.setItem('mystery_date', todayKey());
+  localStorage.setItem('mystery_amount', String(amount));
+}
+
+/* ========= UI helpers ========= */
+function showToast(msg){ toast.textContent=msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),1800); }
+function confettiBurst(){
+  confetti.innerHTML='';
+  const n = 28;
+  for(let i=0;i<n;i++){
+    const p = document.createElement('i');
+    p.style.left = (Math.random()*100)+'vw';
+    p.style.animationDelay = (Math.random()*0.5)+'s';
+    p.style.background = Math.random()<.5 ? 'linear-gradient(#80ffea,#4e9cff)' : 'linear-gradient(#ffd166,#ff3d7f)';
+    confetti.appendChild(p);
+  }
+  setTimeout(()=> confetti.innerHTML='', 1800);
+}
+const money = n => "$"+n.toLocaleString("es-AR");
+
+/* ========= Render de 6 cajas ========= */
+function renderBoxes(){
+  boxesEl.innerHTML = '';
+  for(let i=0;i<6;i++){
+    const box = document.createElement('div');
+    box.className = 'box';
+    box.innerHTML = `
+      <div class="lid"></div>
+      <div class="body"></div>
+      <div class="ribbon"></div>
+      <div class="prize"><span class="badge">?</span></div>
+    `;
+    box.addEventListener('click', ()=>onPick(box));
+    boxesEl.appendChild(box);
+  }
+  // si ya jugó hoy, bloquear
+  if(alreadyPlayedToday()){
+    const win = parseInt(localStorage.getItem('mystery_amount')||'0',10);
+    if(win){
+      // mostrar estado ganador
+      winBadge.textContent = money(win);
+      titleEl.textContent = "🎉 ¡Premio obtenido!";
+      subEl.innerHTML = `Recibís <b>${money(win)} extra</b> con tu próxima carga.`;
+      claimBtn.disabled = false;
+      const msg = WP_MSG.replace("%AMOUNT%", win.toLocaleString("es-AR"));
+      claimBtn.onclick = ()=> location.href = `https://wa.me/${WP}?text=${encodeURIComponent(msg)}`;
+    }
+    // desactivar cajas
+    document.querySelectorAll('.box').forEach(b => b.classList.add('disabled'));
+  }
+}
+
+/* ========= Lógica al abrir ========= */
+let opened = false;
+function onPick(boxEl){
+  if(opened){ return; }
+  if(alreadyPlayedToday()){
+    showToast("Ya abriste una caja hoy");
+    return;
+  }
+  opened = true;
+
+  // premio aleatorio de la lista
+  const win = AMOUNTS[Math.floor(Math.random()*AMOUNTS.length)];
+
+  // animación + sonido
+  boxEl.classList.add('open');
+  AudioKit.open();
+
+  // mostrar premio
+  const prizeEl = boxEl.querySelector('.prize .badge');
+  setTimeout(()=>{
+    prizeEl.textContent = money(win);
+    winBadge.textContent = money(win);
+    titleEl.textContent = "🎉 ¡Premio obtenido!";
+    subEl.innerHTML = `Recibís <b>${money(win)} extra</b> con tu próxima carga.`;
+    claimBtn.disabled = false;
+    const msg = WP_MSG.replace("%AMOUNT%", win.toLocaleString("es-AR"));
+    claimBtn.onclick = ()=> location.href = `https://wa.me/${WP}?text=${encodeURIComponent(msg)}`;
+    saveWin(win);
+    confettiBurst();
+    AudioKit.win();
+  }, 260);
+
+  // desactivar el resto
+  document.querySelectorAll('.box').forEach(b=>{
+    if(b!==boxEl) b.classList.add('disabled');
+  });
+}
+
+/* ========= Init ========= */
+renderBoxes();
+</script>
 </body>
 </html>
