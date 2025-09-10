@@ -45,6 +45,9 @@ h1,h2,h3,p{margin:0 0 8px} h1{font-size:26px} .muted{color:var(--muted)}
 .badge{min-width:86px;height:50px;border-radius:12px;background:radial-gradient(100% 100% at 50% 0%, rgba(0,209,255,.35), rgba(124,77,255,.35));
   display:grid;place-items:center;font-weight:800;font-size:18px;box-shadow:inset 0 0 10px rgba(124,77,255,.35)}
 
+/* pequeño sello para timestamp/código */
+.smallline{font-size:12px;color:var(--muted);margin-top:4px}
+
 /* ===== Cofres: tablero ===== */
 .board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:10px}
 @media (max-width:520px){.board{gap:12px}}
@@ -145,26 +148,17 @@ h1,h2,h3,p{margin:0 0 8px} h1{font-size:26px} .muted{color:var(--muted)}
 }
 @keyframes pop{ from{ transform:scale(.94); opacity:.6 } to{ transform:scale(1); opacity:1 } }
 .winTitle{font-size:26px;margin:0 0 6px;display:flex;align-items:center;gap:10px}
-.winBadge{display:inline-grid;place-items:center;min-width:88px;height:48px;border-radius:12px;font-weight:900;color:#0f132b;
+.winBadge{display:inline-grid;place-items:center;min-width:88px;height:48px;border-radius:12px;font-weight:900;color:#0b0f1e;
   background:linear-gradient(90deg,#ffd166,#ff9e2a);border:1px solid #ffb760;box-shadow:0 8px 20px rgba(255,158,42,.25)}
 .winMsg{color:var(--muted);margin-bottom:14px}
 .modal .row{display:flex;gap:10px}
 .modal .row .btn{flex:1}
-.modal .closeX{position:absolute;right:10px;top:10px;background:transparent;border:none;color:#aaa;font-size:22px;cursor:pointer}
+.modal .closeX{position:absolute;right:10px;top:10px;background:transparent;border:none;color:var(--muted);font-size:22px;cursor:pointer}
 
 /* Confetti */
 .confetti{pointer-events:none;position:absolute;inset:0;overflow:hidden;border-radius:20px}
 .confetti i{position:absolute;top:-10px;width:10px;height:16px;opacity:.9;transform:translateY(-120px) rotate(0deg)}
 @keyframes fall{ to { transform: translateY(120vh) rotate(360deg) } }
-
-/* Watermark del código */
-#wmCode{
-  position:fixed;left:0;right:0;bottom:78px;z-index:60;
-  display:grid;place-items:center;pointer-events:none;
-  font:700 18px system-ui;color:#ffe27a;text-shadow:0 2px 8px rgba(0,0,0,.65);
-  opacity:.95
-}
-@media (min-width:981px){#wmCode{bottom:22px}}
 </style>
 </head>
 <body>
@@ -185,14 +179,17 @@ h1,h2,h3,p{margin:0 0 8px} h1{font-size:26px} .muted{color:var(--muted)}
         <p class="muted">Abrí uno para revelar tu beneficio</p>
 
         <div id="board" class="board">
-          <!-- 6 cofres generados por JS -->
+          <!-- 6 cofres se inyectan por JS (con rotación) -->
         </div>
       </div>
 
       <!-- lateral derecho -->
       <div class="panel side">
         <div class="stat">
-          <div class="badge" id="badge">-</div>
+          <div>
+            <div class="badge" id="badge">-</div>
+            <div class="smallline" id="stampLine" aria-live="polite"></div>
+          </div>
           <div>
             <h2 id="title" style="margin:0">Tenés 1 apertura disponible</h2>
             <p id="subtitle" class="muted">Los premios se acreditan con tu <b>próxima carga mínima</b>.</p>
@@ -226,6 +223,7 @@ h1,h2,h3,p{margin:0 0 8px} h1{font-size:26px} .muted{color:var(--muted)}
     <div class="confetti" id="confetti"></div>
     <h3 class="winTitle">🎉 ¡Premio obtenido! <span class="winBadge" id="winAmount">$0</span></h3>
     <p class="winMsg" id="winText">Recibís un extra con tu próxima carga.</p>
+    <p class="smallline" id="winMeta"></p>
     <div class="row" style="margin-top:10px">
       <button id="claimBtnModal" class="btn ok">📲 Reclamar por WhatsApp</button>
       <a id="playNowModal" class="btn" target="_blank" rel="noopener">🎮 Entrar</a>
@@ -235,7 +233,7 @@ h1,h2,h3,p{margin:0 0 8px} h1{font-size:26px} .muted{color:var(--muted)}
 
 <script>
 /* ===== Premios (6 montos) ===== */
-const PRIZES = [2000, 3000, 4000, 5000, 7000, 10000];
+const PRIZES = [2000, 3000, 4000, 5000, 7000, 10000]; // $2k a $10k
 
 /* ===== WhatsApp / plataforma por PC ===== */
 const WP_NUMBERS = { principal:"5491157737173", pc1:"5491138601132", pc2:"5491138214312", pc3:"5491168392647" };
@@ -253,37 +251,41 @@ document.getElementById('playNowModal').href = PLATFORM;
 /* ===== Utilidades ===== */
 const money = n => "$"+n.toLocaleString("es-AR");
 function todayKey(){ const n=new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}` }
+const stampEl = document.getElementById('stampLine');
 
-/* ===== ANTIFRAUDE: código único por premio ===== */
-const SALT = "bet300-cofres-blue-v1"; // podés rotarlo periódicamente
+/* ===== Antifraude: device id + hash corto ===== */
 function ensureDeviceId(){
   let id = localStorage.getItem('device_id');
-  if(!id){ id = (crypto.randomUUID?crypto.randomUUID(): (Date.now()+"-"+Math.random())); localStorage.setItem('device_id', id); }
+  if(!id){
+    id = (crypto.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2,8)}`);
+    localStorage.setItem('device_id', id);
+  }
   return id;
 }
-async function sha256hex(msg){
-  const enc = new TextEncoder().encode(msg);
-  const buf = await crypto.subtle.digest("SHA-256", enc);
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+const DEVICE_ID = ensureDeviceId();
+
+/* Hash rápido (xmur3 + mulberry32) para generar un código corto */
+function xmur3(str){let h=1779033703^str.length;for(let i=0;i<str.length;i++){h=Math.imul(h^str.charCodeAt(i),3432918353);h=h<<13|h>>>19}return function(){h=Math.imul(h^(h>>>16),2246822507);h=Math.imul(h^(h>>>13),3266489909);return (h^(h>>>16))>>>0}}
+function mulberry32(a){return function(){let t=a+=0x6D2B79F5;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296}}
+function shortCode(s){
+  const seed = xmur3(s)();
+  // 6-8 chars base36
+  return Math.floor(seed).toString(36).toUpperCase().slice(0,8);
 }
-async function makeClaimCode(prizeLabel){
-  const device = ensureDeviceId();
-  const base = `${device}|${todayKey()}|${prizeLabel}|${SALT}`;
-  const hex = await sha256hex(base);
-  return hex.slice(0,10).toUpperCase();
+
+/* Timestamp legible */
+function tsString(d=new Date()){
+  const dd = String(d.getDate()).padStart(2,'0');
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const yyyy = d.getFullYear();
+  const hh = String(d.getHours()).padStart(2,'0');
+  const mi = String(d.getMinutes()).padStart(2,'0');
+  return `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
 }
-function showClaimWatermark(code){
-  let wm = document.getElementById('wmCode');
-  if(!wm){
-    wm = document.createElement('div');
-    wm.id = 'wmCode';
-    document.body.appendChild(wm);
-  }
-  wm.textContent = `Código de reclamo: ${code}`;
-}
-function whatsappTextWithCode(v, code){
-  return `Hola, gané ${money(v)} en los cofres y quiero reclamarlo con mi próxima carga. Código: ${code}`;
-}
+
+/* Texto de WhatsApp incluyendo código y fecha */
+const whatsappText = (v, code, ts) => 
+  `Hola, gané ${money(v)} en el juego de cofres y quiero reclamarlo con mi próxima carga. Código: ${code} · ${ts}`;
 
 /* ===== Elementos ===== */
 const board = document.getElementById('board');
@@ -294,7 +296,7 @@ const claimBtn = document.getElementById('claimBtn');
 const claimBtnDock = document.getElementById('claimBtnDock');
 const claimBtnModal = document.getElementById('claimBtnModal');
 
-/* ===== Crear cofres ===== */
+/* ===== Crear cofres (por índice de PRIZES) ===== */
 function chestHTML(idx){
   return `
     <div class="chest" data-index="${idx}">
@@ -306,7 +308,6 @@ function chestHTML(idx){
       <div class="prize">${money(PRIZES[idx])}</div>
     </div>`;
 }
-board.innerHTML = PRIZES.map((_,i)=>chestHTML(i)).join("");
 
 /* ===== Estado diario ===== */
 function restoreDaily(){
@@ -315,7 +316,6 @@ function restoreDaily(){
   if(storedDay && storedDay !== today){
     localStorage.removeItem('cofre_done');
     localStorage.removeItem('cofre_prize');
-    localStorage.removeItem('cofre_code');
     localStorage.setItem('cofre_date', today);
   } else if(!storedDay){
     localStorage.setItem('cofre_date', today);
@@ -324,78 +324,119 @@ function restoreDaily(){
 function restorePrizeIfAny(){
   const done = localStorage.getItem('cofre_done')==='1';
   const saved = localStorage.getItem('cofre_prize');
+  const savedTs = localStorage.getItem('cofre_ts');
+  const savedCode = localStorage.getItem('cofre_code');
   if(done && saved){
     const v = parseInt(saved,10);
-    const code = localStorage.getItem('cofre_code') || '—';
-    decorateWin(v);
-    enableClaim(v, code);
-    showClaimWatermark(code);
+    decorateWin(v, savedTs || tsString(), savedCode || '(sin código)');
+    enableClaim(v, savedCode || '(sin código)', savedTs || tsString());
   }
 }
-restoreDaily(); restorePrizeIfAny();
+restoreDaily();
+
+/* ===== Rotación de posiciones por usuario (cada N minutos) ===== */
+const ROTATE_MINUTES = 2; // cambiá el intervalo si querés
+
+function shuffleWithRng(arr, rng){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(rng()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+function windowSeedKey(){
+  const bucket = Math.floor(Date.now() / (ROTATE_MINUTES * 60 * 1000));
+  return `${todayKey()}|bucket:${bucket}|${DEVICE_ID}`;
+}
+function renderBoardBySeed(seedStr){
+  const rng = mulberry32(xmur3(seedStr)());
+  const order = shuffleWithRng([...Array(PRIZES.length).keys()], rng);
+  board.innerHTML = order.map(i => chestHTML(i)).join("");
+}
+function setupRotation(){
+  renderBoardBySeed(windowSeedKey());
+  let lastKey = windowSeedKey();
+  setInterval(()=>{
+    // si ya ganó hoy, no rotamos más
+    const alreadyWon = localStorage.getItem('cofre_done')==='1' && localStorage.getItem('cofre_date')===todayKey();
+    if(alreadyWon) return;
+    const k = windowSeedKey();
+    if(k !== lastKey){
+      lastKey = k;
+      renderBoardBySeed(k);
+    }
+  }, 2000);
+}
+setupRotation();
+restorePrizeIfAny();
 
 /* ===== Abrir cofre ===== */
 let opening=false;
-board.addEventListener('click', async e=>{
+board.addEventListener('click', e=>{
   const el = e.target.closest('.chest');
   if(!el || opening) return;
 
   if(localStorage.getItem('cofre_done')==='1'){
-    // ya jugó hoy: reabrir modal con lo guardado
-    showModal(parseInt(localStorage.getItem('cofre_prize'),10)); 
-    const code = localStorage.getItem('cofre_code');
-    if(code) showClaimWatermark(code);
+    showModal(parseInt(localStorage.getItem('cofre_prize'),10), localStorage.getItem('cofre_ts'), localStorage.getItem('cofre_code')); 
     return;
   }
 
   opening=true;
-  el.classList.add('open'); // etiqueta aparece y candado se oculta
+  el.classList.add('open');
 
   const value = PRIZES[+el.dataset.index];
 
-  setTimeout(async ()=>{
-    decorateWin(value);
+  setTimeout(()=>{
+    // generar timestamp y código antifraude
+    const ts = tsString(new Date());
+    const codeSeed = `${DEVICE_ID}|${todayKey()}|${value}|pc:${pc||'0'}`;
+    const code = shortCode(codeSeed);
 
-    // generar código antifraude
-    const code = await makeClaimCode(money(value));
-    localStorage.setItem('cofre_code', code);
-    showClaimWatermark(code);
+    decorateWin(value, ts, code);
+    enableClaim(value, code, ts);
 
-    enableClaim(value, code);
     localStorage.setItem('cofre_done','1');
     localStorage.setItem('cofre_prize', String(value));
-    showModal(value);
+    localStorage.setItem('cofre_ts', ts);
+    localStorage.setItem('cofre_code', code);
+    localStorage.setItem('cofre_date', todayKey());
+
+    showModal(value, ts, code);
     opening=false;
   }, 350);
 });
 
 /* ===== UI: ganador en panel ===== */
-function decorateWin(value){
+function decorateWin(value, ts, code){
   badge.textContent = money(value);
   title.textContent = "🎉 ¡Premio obtenido!";
   subtitle.innerHTML = `Recibís <b>${money(value)} extra</b> con tu próxima carga.`;
+  stampEl.textContent = `Código: ${code} · ${ts}`;
 }
 
-/* ===== Habilitar reclamar (con código) ===== */
-function enableClaim(value, code){
-  const text = whatsappTextWithCode(value, code);
-  const url = `https://wa.me/${WP}?text=${encodeURIComponent(text)}`;
+/* ===== Habilitar reclamar ===== */
+function enableClaim(value, code, ts){
+  const url = `https://wa.me/${WP}?text=${encodeURIComponent(whatsappText(value, code, ts))}`;
   claimBtn.disabled=false; claimBtn.onclick=()=>location.href=url;
   claimBtnDock.disabled=false; claimBtnDock.onclick=()=>location.href=url;
   claimBtnModal.onclick=()=>location.href=url;
+  document.getElementById('playNowDock').href = PLATFORM;
 }
 
 /* ===== Modal con confetti ===== */
 const modal = document.getElementById('winModal');
-const confetti = document.getElementById('confetti');
+const confettiC = document.getElementById('confetti');
 const winAmount = document.getElementById('winAmount');
 const winText = document.getElementById('winText');
+const winMeta = document.getElementById('winMeta');
 document.getElementById('closeModal').addEventListener('click', ()=> modal.classList.remove('show'));
 modal.addEventListener('click', (e)=>{ if(e.target.classList.contains('backdrop')) modal.classList.remove('show') });
 
-function showModal(value){
+function showModal(value, ts, code){
   winAmount.textContent = money(value);
   winText.innerHTML = `¡Felicitaciones! Sumás <b>${money(value)}</b> en tu próxima carga.`;
+  winMeta.textContent = `Código: ${code} · ${ts}`;
   spawnConfetti();
   modal.classList.add('show');
   setTimeout(()=>cleanupConfetti(), 2000);
@@ -414,10 +455,10 @@ function spawnConfetti(){
     p.style.animation = `fall ${1.2 + Math.random()*1.2}s linear forwards`;
     p.style.opacity = .9;
     p.style.borderRadius = '2px';
-    confetti.appendChild(p);
+    confettiC.appendChild(p);
   }
 }
-function cleanupConfetti(){ confetti.innerHTML=''; }
+function cleanupConfetti(){ confettiC.innerHTML=''; }
 
 /* ===== Contador a fin de día ===== */
 const countdownEl = document.getElementById('countdown');
